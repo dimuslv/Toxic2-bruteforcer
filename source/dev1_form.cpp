@@ -16,6 +16,8 @@ const int deviationFromPerfection = -1;
 const int maxVx = 25;
 const int customSize = 1;
 
+const int rememberPeriod = 1;
+
 #include "dev1_collision.cpp"
 #include "dev1_simulator.cpp"
 #include "dev1_bruteforcer.cpp"
