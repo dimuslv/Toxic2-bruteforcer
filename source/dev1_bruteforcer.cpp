@@ -1,4 +1,4 @@
-map<ull, uint> states;
+map<ull, ull> states;
 stringstream result;
 
 const uint OFS_STAND = 0;
@@ -7,7 +7,7 @@ const uint OFS_WALK = 198;
 const uint OFS_JUMP = 504;
 const uint OFS_FALL = 4788;
 const uint OFS_WALL = 7848;
-const uint OFS_END = 8343;
+const uint OFS_END = /*8343*/ OFS_WALL + 5 * ((24 + maxVx) * 2 + 1);
 
 string stateInfoLine(playerState t) {
 	stringstream result;
@@ -21,201 +21,220 @@ string stateInfoLine(playerState t) {
 	return result.str();
 }
 
-uint compressAllButXY(playerState &t) {
-	uint a = t.dir * OFS_END;
+ull compressState(const playerState &t) {
+	ull a = 0;
+	a += (t._y - 40);
 	
-	int vx;
+	a *= level_width * 64;
+	a += t._x;
+	
+	a *= customSize;
+	a += t.custom;
+	
+	a *= 2;
+	a += int(t.hit);
+	
+	a *= 2;
+	a += t.dir;
+	
+	uint b = 0;
+	
+	if (t.state == STAND || t.state == DUCK) {
+		b *= 22;
+		int vx = roundUp(t.vx) / 2;
+		if (vx < -2) {
+			b += vx + 12;
+		} else if (vx < 3) {
+			b += 10;
+		} else {
+			b += vx + 8;
+		}
+	} else if (t.state == WALK || t.state == JUMP || t.state == FALL) {
+		b *= 51;
+		b += t.vx + 25;
+	} else if (t.state == WALL) {
+		b *= (24 + maxVx) * 2 + 1;
+		if (t.left_edge) {
+			b += (t.rx - t._x + 24 + maxVx);
+		} else if (t.right_edge) {
+			b += (t.lx - t._x + 24 + maxVx);
+		} else {
+			b += 24 + maxVx;
+		}
+	}
+	
+	if (t.state == JUMP) {
+		b *= 28;
+		b += min(t.vy + 16, 27);
+	} else if (t.state == FALL) {
+		b *= 12;
+		b += min(t.vy, 11);
+	} else if (t.state == DUCK) {
+		b *= 2;
+		if (t.right_edge || t.left_edge || t.vy < 0) {
+			b++;
+		}
+	} else if (t.state == WALK) {
+		b *= 2;
+		if (t.vy < 0) b++;
+	}
+	
+	if (t.state == WALL) {
+		b *= 5;
+		b += t.fall_count;
+	} else if (t.state == FALL) {
+		b *= 5;
+		if (t.anim == WALL && t.fall_anim_count < 2) {
+			b += (3 + t.fall_anim_count);
+		} else {
+			b += t.wall_count;
+		}
+	} else {
+		b *= 3;
+		b += t.wall_count;
+	}
+	
 	switch (t.state) {
 		case STAND:
-			a += OFS_STAND;
-			vx = roundUp(t.vx) / 2;
-			
-			if (vx < -2) {
-				a += vx + 12;
-			} else if (vx < 3) {
-				a += 10;
-			} else {
-				a += vx + 8;
-			}
-			
-			a += t.wall_count * 22;
+			b += OFS_STAND;
 			break;
 		case DUCK:
-			a += OFS_DUCK;
-			vx = roundUp(t.vx) / 2;
-			
-			if (vx < -2) {
-				a += vx + 12;
-			} else if (vx < 3) {
-				a += 10;
-			} else {
-				a += vx + 8;
-			}
-			
-			a += t.wall_count * 22;
-			if (t.right_edge || t.left_edge || t.vy < 0) {
-				a += 66;
-			}
+			b += OFS_DUCK;
 			break;
 		case WALK:
-			a += OFS_WALK;
-			a += t.vx + 25;
-			a += t.wall_count * 51;
-			if (t.vy < 0) a += 51*3;
+			b += OFS_WALK;
 			break;
 		case JUMP:
-			a += OFS_JUMP;
-			a += t.vx + 25;
-			a += min(t.vy + 16, 27) * 51;
-			a += t.wall_count * 51 * 28;
+			b += OFS_JUMP;
 			break;
 		case FALL:
-			a += OFS_FALL;
-			a += t.vx + 25;
-			a += min(t.vy, 11) * 51;
-			if (t.anim == WALL && t.fall_anim_count < 2) {
-				a += (3 + t.fall_anim_count) * 51 * 12;
-			} else {
-				a += t.wall_count * 51 * 12;
-			}
+			b += OFS_FALL;
 			break;
 		case WALL:
-			a += OFS_WALL;
-			a += t.fall_count;
-			if (t.left_edge) {
-				a += (t.rx - t._x + 49) * 5;
-			} else if (t.right_edge) {
-				a += (t.lx - t._x + 49) * 5;
-			} else {
-				a += 49 * 5;
-			}
+			b += OFS_WALL;
 			break;
 	}
 	
-	return a;
-}
-
-ull compressState(playerState &t) {
-	ull a = t._y - 40;
-	a = a * level_width * 64 + t._x;
-	a *= 2 * OFS_END;
-	a += compressAllButXY(t);
+	a *= OFS_END;
+	a += b;
 	
 	return a;
-}
-
-ull compressState2(playerState t) {
-	return compressState(t);
-}
-
-uint compressRelative(playerState &t, playerState &t2) {
-	uint a = t._y - t2._y + 20;
-	a = a * 93 + t._x - t2._x + 46;
-	a *= 2 * OFS_END;
-	a += compressAllButXY(t);
-	
-	return a;
-}
-
-uint compressRelative2(playerState t, playerState t2) {
-	return compressRelative(t, t2);
-}
-
-playerState uncompressAllButXY (ull c) {
-	playerState t;
-	t.anim = -1;
-	ull temp = c % OFS_END;
-	if (temp >= OFS_WALL) {
-		t.state = WALL;
-		temp -= OFS_WALL;
-		t.fall_count = temp % 5;
-		temp /= 5;
-		if (temp != 49) {
-			t.left_edge = true;
-			t.rx = temp - 49;
-		}
-	} else if (temp >= OFS_FALL) {
-		t.state = FALL;
-		temp -= OFS_FALL;
-		t.vx = temp % 51 - 25;
-		temp /= 51;
-		t.vy = temp % 12;
-		temp /= 12;
-		if (temp < 3) {
-			t.wall_count = temp;
-		} else {
-			t.fall_anim_count = temp - 3;
-			t.anim = WALL;
-			t.prev_state = WALL;
-		}
-	} else if (temp >= OFS_JUMP) {
-		t.state = JUMP;
-		temp -= OFS_JUMP;
-		t.vx = temp % 51 - 25;
-		temp /= 51;
-		t.vy = temp % 28 - 16;
-		temp /= 28;
-		t.wall_count = temp;
-	} else if (temp >= OFS_WALK) {
-		t.state = WALK;
-		temp -= OFS_WALK;
-		t.vx = temp % 51 - 25;
-		temp /= 51;
-		t.wall_count = temp % 3;
-		if (temp >= 3) t.vy = -1;
-	} else {
-		t.state = STAND;
-		if (temp >= OFS_DUCK) {
-			t.state = DUCK;
-			temp -= OFS_DUCK;
-			if (temp >= 66) {
-				t.vy = -1;
-				temp -= 66;
-			}
-		}
-		t.wall_count = temp / 22;
-		temp %= 22;
-		if (temp < 10) {
-			t.vx = (temp - 12) * 2;
-		} else if (temp == 10) {
-			t.vx = 0;
-		} else {
-			t.vx = (temp - 8) * 2;
-		}
-	}
-	
-	if (t.anim == -1) {
-		t.anim = t.state;
-		t.prev_state = t.state;
-	}
-	
-	c /= OFS_END;
-	
-	t.dir = c & 1;
-	t.prev_dir = t.dir;
-	t.animDir = t.dir;
-	
-	return t;
 }
 
 playerState uncompressState(ull c) {
-	playerState t = uncompressAllButXY(c);
-	t._x = (c / OFS_END / 2) % (level_width * 64);
-	t._y = c / OFS_END / 2 / (level_width * 64) + 40;
+	playerState t;
+	ull temp;
+	
+	temp = c % OFS_END;
+	c /= OFS_END;
+	
+	if (temp >= OFS_JUMP) {
+		if (temp >= OFS_WALL) {
+			t.state = WALL;
+			temp -= OFS_WALL;
+		} else if (temp >= OFS_FALL) {
+			t.state = FALL;
+			temp -= OFS_FALL;
+		} else {
+			t.state = JUMP;
+			temp -= OFS_JUMP;
+		}
+	} else {
+		if (temp >= OFS_WALK) {
+			t.state = WALK;
+			temp -= OFS_WALK;
+		} else if (temp >= OFS_DUCK) {
+			t.state = DUCK;
+			temp -= OFS_DUCK;
+		} else {
+			t.state = STAND;
+			temp -= OFS_STAND;
+		}
+	}
+	
+	if (t.state == WALL) {
+		t.fall_count = temp % 5;
+		temp /= 5;
+	} else if (t.state == FALL) {
+		if (temp % 5 < 3) {
+			t.wall_count = temp % 5;
+		} else {
+			t.fall_anim_count = temp % 5 - 3;
+			t.anim = WALL;
+		}
+		temp /= 5;
+	} else {
+		t.wall_count = temp % 3;
+		temp /= 3;
+	}
+	
+	if (t.state == JUMP) {
+		t.vy = temp % 28 - 16;
+		temp /= 28;
+	} else if (t.state == FALL) {
+		t.vy = temp % 12;
+		temp /= 12;
+	} else if (t.state == DUCK || t.state == WALK) {
+		t.vy = -(temp % 2);
+		temp /= 2;
+	}
+	
+	if (t.state == STAND || t.state == DUCK) {
+		if (temp % 22 < 10) {
+			t.vx = (temp % 22 - 12) * 2;
+		} else if (temp % 22 == 10) {
+			t.vx = 0;
+		} else {
+			t.vx = (temp % 22 - 8) * 2;
+		}
+		temp /= 22;
+	} else if (t.state == WALK || t.state == JUMP || t.state == FALL) {
+		t.vx = temp % 51 - 25;
+		temp /= 51;
+	} else if (t.state == WALL) {
+		t.left_edge = true;
+		t.rx = temp % ((24 + maxVx) * 2 + 1) - 24 - maxVx;
+		temp /= (24 + maxVx) * 2 + 1;
+	}
+	
+	if (t.anim != WALL) {
+		t.anim = t.state;
+	}
+	
+	t.dir = c % 2;
+	t.animDir = t.dir;
+	c /= 2;
+	
+	t.hit = c % 2;
+	c /= 2;
+	
+	t.custom = c % customSize;
+	c /= customSize;
+	
+	t._x = c % (level_width * 64);
 	t.rx += t._x;
+	c /= level_width * 64;
+	
+	t._y = c + 40;
+	
 	return t;
 }
 
-playerState uncompressRelative (uint c, playerState &t2) {
+ull compressRelative(const playerState &t1, const playerState &t2) {
+	return compressState(t1);
+}
+
+/*playerState uncompressRelative (uint c, playerState t2) {
 	playerState t = uncompressAllButXY(c);
 	t._x = t2._x + (c / OFS_END / 2) % 93 - 46;
 	t._y = t2._y + c / OFS_END / 2 / 93 - 20;
 	t.rx += t._x;
 	return t;
-}
+}*/
 
-playerState uncompressRelative2(uint c, playerState t2) {
-	return uncompressRelative(c, t2);
+
+playerState uncompressRelative(ull c, const playerState &t2) {
+	return uncompressState(c);
 }
 
 bool hasLostCustom(playerState &p);
@@ -287,7 +306,7 @@ void printSolution(ull p2ci, int e) {
 	bool broken = false;
 	
 	playerState endP = uncompressState(p2ci/e);
-	ull pci = compressState2(uncompressRelative(states[p2ci]/e, endP)) * e + (states[p2ci] % e);
+	ull pci = compressState(uncompressRelative(states[p2ci]/e, endP)) * e + (states[p2ci] % e);
 	
 	playerState temp, temp2;
 	
@@ -302,7 +321,7 @@ void printSolution(ull p2ci, int e) {
 				break;
 			}
 			
-			if (compressState2(updateWithFull(temp, k)) == t2ci / e) {
+			if (compressState(updateWithFull(temp, k)) == t2ci / e) {
 				ans = letters[k] + ans;
 				break;
 			}
@@ -311,7 +330,7 @@ void printSolution(ull p2ci, int e) {
 		if (states[tci] == 0) break;
 		
 		t2ci = tci;
-		tci = compressState2(uncompressRelative(states[tci] / e, temp)) * e + states[tci] % e;
+		tci = compressState(uncompressRelative(states[tci] / e, temp)) * e + states[tci] % e;
 	}
 	
 	string line = solutionLine(ans, temp, endP);
@@ -330,7 +349,7 @@ void printSolution(ull p2ci, int e) {
 			
 			if (states[t3ci] == 0) break;
 			
-			t3ci = compressState2(uncompressRelative(states[t3ci] / e, temp3)) * e + states[t3ci] % e;
+			t3ci = compressState(uncompressRelative(states[t3ci] / e, temp3)) * e + states[t3ci] % e;
 		}
 		cout << rec;
 		result << rec;
@@ -380,7 +399,7 @@ void frameMinInputTime(playerState &p, int oldInp, int inp, vector<ull> &next, b
 		p2ci += inp;
 	}
 	
-	uint pci = compressRelative(p, p2) * 4 + oldInp;
+	/*uint*/ull pci = compressRelative(p, p2) * 4 + oldInp;
 	
 	if (won) {
 		if (states.count(p2ci)) return;

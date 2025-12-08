@@ -23,8 +23,6 @@ struct playerState {
 	int dir;
 	int lx;
 	int rx;
-	int prev_dir = STAND;
-	int prev_state = STAND;
 	int wall_count = 0;
 	int fall_count;
 	bool wall_jump;
@@ -33,11 +31,11 @@ struct playerState {
 	bool right_edge = false;
 	bool hit = false;
 	bool hit_ceiling;
-	int hit_count = 0;
-	bool can_jump = true;
+	//bool can_jump = true;
 	bool DOWN_PRESSED = false;
 	bool UP_PRESSED = false;
 	int DIR_PRESSED = -1;
+	int custom = 0;
 };
 
 bool getOnWall(playerState &t, int x, int y) {
@@ -70,22 +68,16 @@ void finishHit(playerState &t) {
 
 void updateAnim(playerState &t) {
 	if (t.state == FALL) {
-		if (t.dir != t.prev_dir || t.state != t.prev_state) {
+		if (t.dir != t.animDir || t.state != t.anim) {
 			t.fall_anim_count++;
 			if (t.fall_anim_count >= 3) {
 				t.anim = t.state;
 				t.animDir = t.dir;
-				t.prev_dir = t.dir;
-				t.prev_state = t.state;
 			}
 		}
 	} else {
-		if (t.dir != t.prev_dir || t.state != t.prev_state) {
-			t.anim = t.state;
-			t.animDir = t.dir;
-		}
-		t.prev_dir = t.dir;
-		t.prev_state = t.state;
+		t.anim = t.state;
+		t.animDir = t.dir;
 	}
 	if (t.hit) {
 		t.anim = HIT;
@@ -506,11 +498,11 @@ int checkFloor(playerState &t, int v) {
 }
 
 void startJump(playerState &t) {
-	if (t.can_jump) {
+	//if (t.can_jump) {
 		t.vy = -16;
 		t.state = JUMP;
-		t.can_jump = false;
-	}
+		//t.can_jump = false;
+	//}
 }
 
 void startWall(playerState &t) {
@@ -519,15 +511,22 @@ void startWall(playerState &t) {
 	t.fall_count = 0;
 	t.vy = 0;
 	t.vx = 0;
-	t.can_jump = true;
+	//t.can_jump = true;
 }
 
 void startWallJump(playerState &t) {
-	if (t.can_jump) {
+	//if (t.can_jump) {
 		t.vy = -12;
 		t.state = JUMP;
 		//t.can_jump = false;
-	}
+	//}
+}
+
+void startHit(playerState &t) {
+	t.hit = true;
+	t.vy = -8;
+	t.state = JUMP;
+	updateAnim(t);
 }
 
 void doStand(playerState &t) {
@@ -771,7 +770,7 @@ void doJump(playerState &t) {
 	if (t.left_edge) {
 		if (getOnGround(t.rx, t._y)) {
 			if (!t.UP_PRESSED) {
-				t.can_jump = true;
+				//t.can_jump = true;
 			}
 			if (t.vx == 0) {
 				t.state = STAND;
@@ -782,7 +781,7 @@ void doJump(playerState &t) {
 	} else if (t.right_edge) {
 		if (getOnGround(t.lx, t._y)) {
 			if (!t.UP_PRESSED) {
-				t.can_jump = true;
+				//t.can_jump = true;
 			}
 			if (t.vx == 0) {
 				t.state = STAND;
@@ -792,7 +791,7 @@ void doJump(playerState &t) {
 		}
 	} else if (getOnGround(t._x, t._y)) {
 		if (!t.UP_PRESSED) {
-			t.can_jump = true;
+			//t.can_jump = true;
 		}
 		if (t.vx == 0) {
 			t.state = STAND;
@@ -869,7 +868,7 @@ void doFall(playerState &t) {
 	if (t.left_edge) {
 		if (getOnGround(t.rx, t._y)) {
 			if (!t.UP_PRESSED) {
-				t.can_jump = true;
+				//t.can_jump = true;
 			}
 			if (t.vx == 0) {
 				t.state = STAND;
@@ -880,7 +879,7 @@ void doFall(playerState &t) {
 	} else if (t.right_edge) {
 		if (getOnGround(t.lx, t._y)) {
 			if (!t.UP_PRESSED) {
-				t.can_jump = true;
+				//t.can_jump = true;
 			}
 			if (t.vx == 0) {
 				t.state = STAND;
@@ -890,7 +889,7 @@ void doFall(playerState &t) {
 		}
 	} else if (getOnGround(t._x, t._y)) {
 		if (!t.UP_PRESSED) {
-			t.can_jump = true;
+			//t.can_jump = true;
 		}
 		if (t.vx == 0) {
 			t.state = STAND;
@@ -993,7 +992,7 @@ void update(playerState &t) {
 	
 	doSpecial(t);
 	
-	if (t.hit_count > 0) {
+	/*if (t.hit_count > 0) {
 		t.hit_count--;
-	}
+	}*/
 }
