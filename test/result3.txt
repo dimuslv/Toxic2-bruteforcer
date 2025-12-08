@@ -1,0 +1,229 @@
+Border size: 1, time: 0
+Border size: 5, time: 1
+Border size: 12, time: 2
+Border size: 55, time: 3
+Border size: 78, time: 4
+Border size: 252, time: 5
+Border size: 1155, time: 6
+Border size: 1180, time: 7
+Border size: 4287, time: 8
+Border size: 18273, time: 9
+Border size: 10108, time: 10
+Border size: 35569, time: 11
+Border size: 143209, time: 12
+Border size: 55485, time: 13
+Border size: 183812, time: 14
+Border size: 621455, time: 15
+Border size: 194231, time: 16
+Border size: 460213, time: 17
+Border size: 1746715, time: 18
+Border size: 399958, time: 19
+Border size: 875522, time: 20
+Border size: 2904899, time: 21
+Border size: 575133, time: 22
+Border size: 1234951, time: 23
+Border size: 4287793, time: 24
+Border size: 930478, time: 25
+Border size: 2642469, time: 26
+Border size: 10054106, time: 27
+Border size: 1815735, time: 28
+Border size: 5674088, time: 29
+Border size: 23095415, time: 30
+Border size: 3323151, time: 31
+Border size: 10647713, time: 32
+Border size: 44498059, time: 33
+Border size: 4976075, time: 34
+Border size: 15781767, time: 35
+Border size: 62930870, time: 36
+Border size: 5913735, time: 37
+Border size: 19266633, time: 38
+Border size: 75500782, time: 39
+Border size: 5993165, time: 40
+aawaaaannnndndnanddnwnddndadnnnnnnnnnnnnn 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnnnnna 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnnnnnd 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnnnnaa 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnnnnad 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnnnndn 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnnnnda 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnnnndd 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnnnaaa 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnnnaad 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnnnadd 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnnndan 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnnndaa 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnnnddd 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnnaaaa 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnnaaad 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnnaddd 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnndaaa 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnnddda 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnndddd 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnaaaaa 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnaaaad 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnaddda 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnadddd 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnndaaaa 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnndaaad 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnndddda 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnnddddd 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnaaaaaa 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnaaaaad 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnadddda 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnaddddd 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnndaaaaa 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnndaaaad 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnnddddda 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnndddddd 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnaaaaaaa 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnaaaaaad 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnaddddda 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnadddddd 286.5
+aawaaaannnndndnanddnwnddndadnnnnnndaaaaaa 286.5
+aawaaaannnndndnanddnwnddndadnnnnnndaaaaad 286.5
+aawaaaannnndndnanddnwnddndadnnnnnndddddda 286.5
+aawaaaannnndndnanddnwnddndadnnnnnnddddddd 286.5
+aawaaaannnndndnanddnwnddndadnnnnnanddddda 286.5
+aawaaaannnndndnanddnwnddndadnnnnnandddddd 286.5
+aawaaaannnndndnanddnwnddndadnnnnnaaaaaaaa 286.5
+aawaaaannnndndnanddnwnddndadnnnnnaaaaaaad 286.5
+aawaaaannnndndnanddnwnddndadnnnnnddddddda 286.5
+aawaaaannnndndnanddnwnddndadnnnnndddddddd 286.5
+aawaaaannnndndnanddnwnddndadnnnnaaaaaaaaa 286.5
+aawaaaannnndndnanddnwnddndadnnnnaaaaaaaad 286.5
+aawaaaannnndndnanddnwnddndadnnnnaddddddda 286.5
+aawaaaannnndndnanddnwnddndadnnnnadddddddd 286.5
+aawaaaannnndndnanddnwnddndadnnnndddddddda 286.5
+aawaaaannnndndnanddnwnddndadnnnnddddddddd 286.5
+aawaaaannnndndnanddnwnddndadnnnaadaaaaaaa 286.5
+aawaaaannnndndnanddnwnddndadnnnaadaaaaaad 286.5
+aawaaaannnndndnanddnwnddndadnnnaaddddddda 286.5
+aawaaaannnndndnanddnwnddndadnnnaadddddddd 286.5
+aawaaaannnndndnanddnwnddndadnnnadddddddda 286.5
+aawaaaannnndndnanddnwnddndadnnnaddddddddd 286.5
+aawaaaannnndndnanddnwnddndadnnnddddddddda 286.5
+aawaaaannnndndnanddnwnddndadnnndddddddddd 286.5
+aawaaaannnndndnanddnwnddndadnnaaandddddda 286.5
+aawaaaannnndndnanddnwnddndadnnaaanddddddd 286.5
+aawaaaannnndndnanddnwnddndadnnaaaaaaaaaaa 286.5
+aawaaaannnndndnanddnwnddndadnnaaaaaaaaaad 286.5
+aawaaaannnndndnanddnwnddndadnnaadddddddda 286.5
+aawaaaannnndndnanddnwnddndadnnaaddddddddd 286.5
+aawaaaannnndndnanddnwnddndadnnaddddddddda 286.5
+aawaaaannnndndnanddnwnddndadnnadddddddddd 286.5
+aawaaaannnndndnanddnwnddndadnndddddddddna 286.5
+aawaaaannnndndnanddnwnddndadnndddddddddaa 286.5
+aawaaaannnndndnanddnwnddndadnndddddddddad 286.5
+aawaaaannnndndnanddnwnddndadnaaaaaaaaaaaa 286.5
+aawaaaannnndndnanddnwnddndadnaaaaaaaaaaad 286.5
+aawaaaannnndndnanddnwnddndadnaaadddddddda 286.5
+aawaaaannnndndnanddnwnddndadnaaaddddddddd 286.5
+aawaaaannnndndnanddnwnddndadnddddddddadda 286.5
+Border size: 18626687, time: 41
+Border size: 67118798, time: 42
+Border size: 4482892, time: 43
+Border size: 12814071, time: 44
+Border size: 33727348, time: 45
+Border size: 1876134, time: 46
+Border size: 3897812, time: 47
+Border size: 7390419, time: 48
+Border size: 400533, time: 49
+Border size: 662619, time: 50
+Border size: 656889, time: 51
+Border size: 146146, time: 52
+Border size: 224991, time: 53
+Border size: 277020, time: 54
+Border size: 58932, time: 55
+Border size: 84179, time: 56
+Border size: 96656, time: 57
+Border size: 25703, time: 58
+Border size: 48489, time: 59
+Border size: 83781, time: 60
+Border size: 16807, time: 61
+Border size: 32774, time: 62
+Border size: 46683, time: 63
+Border size: 13607, time: 64
+Border size: 27734, time: 65
+Border size: 47227, time: 66
+Border size: 13544, time: 67
+Border size: 27771, time: 68
+Border size: 48091, time: 69
+Border size: 11233, time: 70
+Border size: 23629, time: 71
+Border size: 46204, time: 72
+Border size: 9754, time: 73
+Border size: 20918, time: 74
+Border size: 37801, time: 75
+Border size: 8929, time: 76
+Border size: 18725, time: 77
+Border size: 28623, time: 78
+Border size: 9030, time: 79
+Border size: 13456, time: 80
+Border size: 26479, time: 81
+Border size: 5935, time: 82
+Border size: 15843, time: 83
+Border size: 19217, time: 84
+Border size: 6623, time: 85
+Border size: 9753, time: 86
+Border size: 7585, time: 87
+Border size: 1190, time: 88
+Border size: 1455, time: 89
+Border size: 3032, time: 90
+Border size: 943, time: 91
+Border size: 1176, time: 92
+Border size: 2751, time: 93
+Border size: 444, time: 94
+Border size: 680, time: 95
+Border size: 1897, time: 96
+Border size: 213, time: 97
+Border size: 474, time: 98
+Border size: 1753, time: 99
+Border size: 136, time: 100
+Border size: 460, time: 101
+Border size: 1549, time: 102
+Border size: 130, time: 103
+Border size: 442, time: 104
+Border size: 1738, time: 105
+Border size: 132, time: 106
+Border size: 442, time: 107
+Border size: 1846, time: 108
+Border size: 134, time: 109
+Border size: 442, time: 110
+Border size: 1534, time: 111
+Border size: 130, time: 112
+Border size: 442, time: 113
+Border size: 1534, time: 114
+Border size: 120, time: 115
+Border size: 408, time: 116
+Border size: 1356, time: 117
+Border size: 64, time: 118
+Border size: 156, time: 119
+Border size: 466, time: 120
+Border size: 152, time: 121
+Border size: 682, time: 122
+Border size: 3258, time: 123
+Border size: 1289, time: 124
+Border size: 5638, time: 125
+Border size: 25565, time: 126
+Border size: 5454, time: 127
+Border size: 19967, time: 128
+Border size: 82374, time: 129
+Border size: 14475, time: 130
+Border size: 46353, time: 131
+Border size: 183033, time: 132
+Border size: 25471, time: 133
+Border size: 64139, time: 134
+Border size: 169360, time: 135
+Border size: 18827, time: 136
+Border size: 26634, time: 137
+Border size: 77207, time: 138
+Border size: 6584, time: 139
+Border size: 3820, time: 140
+Border size: 9426, time: 141
+Border size: 4075, time: 142
+Border size: 1673, time: 143
+Border size: 1600, time: 144
+Border size: 1104, time: 145
+Border size: 68, time: 146
+Elapsed: 383 seconds
+State set size: 31355466
