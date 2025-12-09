@@ -607,7 +607,7 @@ void bruteforceMinTime() {
 	states.clear();
 }
 
-void printHollowSolution(playerState &startP, playerState &endP, cVector &inputs, short length) {
+void printHollowSolution(playerState &startP, playerState &endP, vector<char> &inputs, short length) {
 	stringstream ans;
 	string letters[] = {"n", "a", "d", "w", "s"};
 	
@@ -629,7 +629,7 @@ void bruteforceMinTimeHollow() {
 	vQueue<ull> border;
 	
 	cQueue inputs(inputCount);
-	cVector currentInputs(inputCount);	
+	vector<char> currentInputs(inputCount);	
 	vQueue<short> commonParts;
 	vQueue<short> lengths;
 	//int startStateRegions[startStates.size()];
@@ -679,7 +679,7 @@ void bruteforceMinTimeHollow() {
 			currentInputs.resize(curCommonPart);
 			
 			for (int k = curCommonPart; k < curLength; k++) {
-				currentInputs.push(inputs.pop());
+				currentInputs.push_back(inputs.pop());
 			}
 			
 			bool isNew = true;
@@ -695,7 +695,7 @@ void bruteforceMinTimeHollow() {
 				if (been.count(p2c) || (!remember && curBeen.count(p2c))) continue;
 				
 				currentInputs.resize(curLength);
-				currentInputs.push(j);
+				currentInputs.push_back(j);
 				short newLength = curLength + 1;
 				
 				if (won) {
