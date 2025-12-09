@@ -225,5 +225,5 @@ Border size: 778, time: 143
 Border size: 714, time: 144
 Border size: 113, time: 145
 Border size: 7, time: 146
-Elapsed: 138 seconds
+Elapsed: 160 seconds
 State set size: 39290357

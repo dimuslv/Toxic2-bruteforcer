@@ -1,5 +1,6 @@
 map<ull, ull> states;
 set<ull> been;
+set<ull> curBeen;
 
 const uint OFS_STAND = 0;
 const uint OFS_DUCK = 66;
@@ -606,33 +607,12 @@ void bruteforceMinTime() {
 	states.clear();
 }
 
-const char inputBits = 3;
-typedef vector<bool> inputVector;
-
-void pushInput(inputVector &v, char b) {
-	for (int i = 0; i < inputBits; i++) {
-		v.push_back(b & (1 << i));
-	}
-}
-
-char getInput(inputVector &v, int ind) {
-	char a;
-	for (int i = 0; i < inputBits; i++) {
-		a |= (1 << i) * v[inputBits * ind + i];
-	}
-	return a;
-}
-
-void resizeInputs(inputVector &v, int size) {
-	v.resize(inputBits * size);
-}
-
-void printHollowSolution(playerState &startP, playerState &endP, inputVector &inputs, short length) {
+void printHollowSolution(playerState &startP, playerState &endP, cVector &inputs, short length) {
 	stringstream ans;
 	string letters[] = {"n", "a", "d", "w", "s"};
 	
 	for (int i = 0; i < length; i++) {
-		ans << letters[getInput(inputs, i)];
+		ans << letters[inputs.at(i)];
 	}
 	
 	print(solutionLine(ans.str(), startP, endP));
@@ -640,24 +620,26 @@ void printHollowSolution(playerState &startP, playerState &endP, inputVector &in
 
 bool equalLength = true;
 
+int inputCount = 5;
+
 void bruteforceMinTimeHollow() {
 	vector<playerState> startStates;
 	getStartStates(startStates);
 	
-	vector<ull> border, newBorder;
-	inputVector inputs, newInputs, currentInputs;
-	if (sizeof inputs != 40 || sizeof newInputs != 40 || sizeof currentInputs != 40) {
-		print("Bool vector incorrect!\n");
-		return;
-	}
-	vector<short> commonParts, newCommonParts;
-	vector<short> lengths, newLengths;
-	int startStateRegions[startStates.size()];
+	vQueue<ull> border;
+	
+	cQueue inputs(inputCount);
+	cVector currentInputs(inputCount);	
+	vQueue<short> commonParts;
+	vQueue<short> lengths;
+	//int startStateRegions[startStates.size()];
+	vector<int> startStateRegions(startStates.size());
 	
 	for (int i = 0; i < startStates.size(); i++) {
-		border.push_back(compressState(startStates[i]));
-		commonParts.push_back(0);
-		if (!equalLength) lengths.push_back(0);
+		border.push(compressState(startStates[i]));
+		been.insert(compressState(startStates[i]));
+		commonParts.push(0);
+		if (!equalLength) lengths.push(0);
 		startStateRegions[i] = i;
 	}
 	
@@ -666,8 +648,8 @@ void bruteforceMinTimeHollow() {
 	
 	auto startTime = std::chrono::steady_clock::now();
 	
-	while (!border.empty()) {
-		info << "Border size: " << border.size() << ", time: " << curtime << endl;
+	while (border.size > 0) {
+		info << "Border size: " << border.size << ", time: " << curtime << endl;
 		print();
 		
 		if (activeWrite) {
@@ -677,22 +659,27 @@ void bruteforceMinTimeHollow() {
 		}
 		
 		short minCommonPart = SHRT_MAX;
-		int currentPos = 0;
 		int nextStartStateRegion = 0;
 		
-		for (int i = 0; i < border.size(); i++) {
-			playerState p = uncompressState(border[i]);
-			
-			while (nextStartStateRegion < startStates.size() && i == startStateRegions[nextStartStateRegion]) {
-				startStateRegions[nextStartStateRegion++] = newBorder.size();
+		curBeen.clear();
+		bool remember = curtime % rememberPeriod == 0;
+		
+		int borderSize = border.size;
+		
+		for (int i = 0; i < borderSize; i++) {
+			while (nextStartStateRegion < startStateRegions.size() && i == startStateRegions[nextStartStateRegion]) {
+				startStateRegions[nextStartStateRegion++] = border.size - borderSize + i;
 			}
 			playerState curStartState = startStates[nextStartStateRegion - 1];
 			
-			resizeInputs(currentInputs, commonParts[i]);
+			playerState p = uncompressState(border.pop());
+			short curCommonPart = commonParts.pop();
+			short curLength = equalLength? curtime : lengths.pop();
 			
-			short curLength = equalLength? curtime : lengths[i];
-			for (int k = commonParts[i]; k < curLength; k++) {
-				pushInput(currentInputs, getInput(inputs, currentPos++));
+			currentInputs.resize(curCommonPart);
+			
+			for (int k = curCommonPart; k < curLength; k++) {
+				currentInputs.push(inputs.pop());
 			}
 			
 			bool isNew = true;
@@ -705,10 +692,10 @@ void bruteforceMinTimeHollow() {
 				}
 				
 				ull p2c = compressState(p2);
-				if (been.count(p2c)) continue;
+				if (been.count(p2c) || (!remember && curBeen.count(p2c))) continue;
 				
-				resizeInputs(currentInputs, curLength);
-				pushInput(currentInputs, j);
+				currentInputs.resize(curLength);
+				currentInputs.push(j);
 				short newLength = curLength + 1;
 				
 				if (won) {
@@ -718,23 +705,25 @@ void bruteforceMinTimeHollow() {
 					}
 					printHollowSolution(curStartState, p2, currentInputs, newLength);
 				} else {
-					if (curtime % rememberPeriod == 0) {
+					if (remember) {
 						been.insert(p2c);
+					} else {
+						curBeen.insert(p2c);
 					}
 					
-					newBorder.push_back(p2c);
+					border.push(p2c);
 					short commonPart;
 					
 					if (isNew) {
-						commonPart = min(commonParts[i], minCommonPart);
+						commonPart = min(curCommonPart, minCommonPart);
 					} else {
 						commonPart = curLength;
 					}
-					newCommonParts.push_back(commonPart);
-					if (!equalLength) newLengths.push_back(newLength);
+					commonParts.push(commonPart);
+					if (!equalLength) lengths.push(newLength);
 					
 					for (int k = commonPart; k < newLength; k++) {
-						pushInput(newInputs, getInput(currentInputs, k));
+						inputs.push(currentInputs.at(k));
 					}
 					
 					isNew = false;
@@ -742,20 +731,12 @@ void bruteforceMinTimeHollow() {
 			}
 			
 			if (isNew) {
-				minCommonPart = min(commonParts[i], minCommonPart);
+				minCommonPart = min(curCommonPart, minCommonPart);
 			} else {
 				minCommonPart = SHRT_MAX;
 			}
 		}
-		
-		swap(border, newBorder);
-		newBorder.clear();
-		swap(inputs, newInputs);
-		newInputs.clear();
-		swap(commonParts, newCommonParts);
-		newCommonParts.clear();
-		swap(lengths, newLengths);
-		newLengths.clear();
+		startStateRegions.resize(nextStartStateRegion);
 
 		curtime++;
 		
@@ -774,7 +755,7 @@ void bruteforceMinTimeHollow() {
 	file << getOutput();
 	file.close();
 	
-	states.clear();
+	been.clear();
 }
 
 int main() {
