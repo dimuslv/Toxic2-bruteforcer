@@ -13,7 +13,6 @@ const string filename = "result.txt";
 
 const int deviationFromPerfection = -1;
 
-const int maxVx = 25;
 const int customSize = 1;
 
 const int rememberPeriod = 1;
@@ -44,7 +43,10 @@ void getStartStates(vector<playerState> &startStates) {
 	playerState p;
 	p._x = dud;
 	p._y = dud;
+	p.vx = 0;
+	p.vy = 0;
+	p.wall_count = 0;
+	p.state = STAND;
 	p.dir = LEFT;
-	p.animDir = LEFT;
 	startStates.push_back(p);
 }

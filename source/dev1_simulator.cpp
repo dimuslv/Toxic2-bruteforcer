@@ -35,7 +35,10 @@ struct playerState {
 	bool DOWN_PRESSED = false;
 	bool UP_PRESSED = false;
 	int DIR_PRESSED = -1;
+	
 	int custom = 0;
+	
+	int oldX;
 };
 
 bool getOnWall(playerState &t, int x, int y) {
@@ -126,6 +129,8 @@ void calculateDistance(playerState &t, bool b) {
 			break;
 		}
 	}*/
+	
+	t.oldX = t._x;
 	
 	int lh = 35;
 	int rh = 35;

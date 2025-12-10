@@ -9,18 +9,17 @@ const int bruteforceType = 0;
 const bool advancedMinInput = false;
 
 const bool activeWrite = true;
-const string filename = "result2_curBeen_bv.txt";
+const string filename = "result2_normalDuck.txt";
 
 const int deviationFromPerfection = -1;
 
-const int maxVx = 25;
 const int customSize = 1;
 
 const int rememberPeriod = 2;
 
 #include "dev1_collision.cpp"
 #include "dev1_simulator.cpp"
-#include "dev1_bruteforcer_bv.cpp"
+#include "dev1_bruteforcer.cpp"
 
 bool hasLostCustom(playerState &p) {
 	return p._x > 350 << 1;

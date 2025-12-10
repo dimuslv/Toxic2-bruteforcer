@@ -2,13 +2,13 @@ map<ull, ull> states;
 set<ull> been;
 set<ull> curBeen;
 
-const uint OFS_STAND = 0;
-const uint OFS_DUCK = 66;
-const uint OFS_WALK = 198;
-const uint OFS_JUMP = 504;
-const uint OFS_FALL = 4788;
-const uint OFS_WALL = 7848;
-const uint OFS_END = /*8343*/ OFS_WALL + 5 * ((24 + maxVx) * 2 + 1);
+const uint OFS_STAND= 0;
+const uint OFS_DUCK = OFS_STAND+ 22 *  1 * 3;
+const uint OFS_WALK = OFS_DUCK + 22 * 42 * 3;
+const uint OFS_JUMP = OFS_WALK + 51 *  2 * 3;
+const uint OFS_FALL = OFS_JUMP + 51 * 28 * 3;
+const uint OFS_WALL = OFS_FALL + 51 * 12 * 5;
+const uint OFS_END  = OFS_WALL + 99 *  1 * 5;//10983
 
 string stateInfoLine(playerState t) {
 	stringstream result;
@@ -54,13 +54,13 @@ ull compressState(const playerState &t) {
 		b *= 51;
 		b += t.vx + 25;
 	} else if (t.state == WALL) {
-		b *= (24 + maxVx) * 2 + 1;
+		b *= 99;
 		if (t.left_edge) {
-			b += (t.rx - t._x + 24 + maxVx);
+			b += (t.rx - t._x + 49);
 		} else if (t.right_edge) {
-			b += (t.lx - t._x + 24 + maxVx);
+			b += (t.lx - t._x + 49);
 		} else {
-			b += 24 + maxVx;
+			b += 49;
 		}
 	}
 	
@@ -71,10 +71,23 @@ ull compressState(const playerState &t) {
 		b *= 12;
 		b += min(t.vy, 11);
 	} else if (t.state == DUCK) {
-		b *= 2;
+		b *= 42;
+		if (t.vy < 0) {
+			b++;
+		} else if (t.right_edge || t.left_edge) {
+			int d = dUp(t.right_edge? t.lx : t.rx, t._y);
+			if (d > 1 && d <= 101) {
+				b += 2;
+				b += ((t._x - t.oldX) / 2) + 19;
+			} else {
+				b++;
+			}
+		}
+		
+		/*b *= 2;
 		if (t.right_edge || t.left_edge || t.vy < 0) {
 			b++;
-		}
+		}*/
 	} else if (t.state == WALK) {
 		b *= 2;
 		if (t.vy < 0) b++;
@@ -169,13 +182,21 @@ playerState uncompressState(ull c) {
 		temp /= 3;
 	}
 	
+	int oldXDisplacement = -100;
 	if (t.state == JUMP) {
 		t.vy = temp % 28 - 16;
 		temp /= 28;
 	} else if (t.state == FALL) {
 		t.vy = temp % 12;
 		temp /= 12;
-	} else if (t.state == DUCK || t.state == WALK) {
+	} else if (t.state == DUCK) {
+		if (temp % 42 == 1) {
+			t.vy = -1;
+		} else if (temp % 42 > 1) {
+			oldXDisplacement = ((temp % 42) - 2 - 19) * 2;
+		}
+		temp /= 42;
+	} else if (t.state == WALK) {
 		t.vy = -(temp % 2);
 		temp /= 2;
 	}
@@ -194,8 +215,8 @@ playerState uncompressState(ull c) {
 		temp /= 51;
 	} else if (t.state == WALL) {
 		t.left_edge = true;
-		t.rx = temp % ((24 + maxVx) * 2 + 1) - 24 - maxVx;
-		temp /= (24 + maxVx) * 2 + 1;
+		t.rx = temp % 99 - 49;
+		temp /= 99;
 	}
 	
 	if (t.anim != WALL) {
@@ -217,6 +238,14 @@ playerState uncompressState(ull c) {
 	c /= level_width * 64;
 	
 	t._y = c + 40;
+	
+	if (t.state == DUCK && oldXDisplacement != -100) {
+		t.anim = STAND;
+		t._x -= oldXDisplacement;
+		calculateDistance(t, false);
+		t._x += oldXDisplacement;
+		t.anim = DUCK;
+	}
 	
 	return t;
 }
@@ -269,13 +298,13 @@ playerState updateWith(playerState p, int inp) {
 }
 
 playerState updateAndCheckFate(playerState p, int inp, bool &lost, bool &won) {
-	if (p.state != DUCK) {
+	//if (p.state != DUCK) {
 		p = updateWith(p, inp);
 		
 		lost = hasLost(p);
 		won = hasWon(p);
 		
-		if (p.state == DUCK) {
+		/*if (p.state == DUCK) {
 			update(p);
 		}
 	} else {
@@ -289,7 +318,7 @@ playerState updateAndCheckFate(playerState p, int inp, bool &lost, bool &won) {
 		} else {
 			lost = true;
 		}
-	}
+	}*/
 	
 	return p;
 }
@@ -607,7 +636,7 @@ void bruteforceMinTime() {
 	states.clear();
 }
 
-void printHollowSolution(playerState &startP, playerState &endP, cVector &inputs, short length) {
+void printHollowSolution(playerState &startP, playerState &endP, vector<char> &inputs, short length) {
 	stringstream ans;
 	string letters[] = {"n", "a", "d", "w", "s"};
 	
@@ -629,7 +658,7 @@ void bruteforceMinTimeHollow() {
 	vQueue<ull> border;
 	
 	cQueue inputs(inputCount);
-	cVector currentInputs(inputCount);	
+	vector<char> currentInputs;	
 	vQueue<short> commonParts;
 	vQueue<short> lengths;
 	//int startStateRegions[startStates.size()];
@@ -679,7 +708,7 @@ void bruteforceMinTimeHollow() {
 			currentInputs.resize(curCommonPart);
 			
 			for (int k = curCommonPart; k < curLength; k++) {
-				currentInputs.push(inputs.pop());
+				currentInputs.push_back(inputs.pop());
 			}
 			
 			bool isNew = true;
@@ -695,7 +724,7 @@ void bruteforceMinTimeHollow() {
 				if (been.count(p2c) || (!remember && curBeen.count(p2c))) continue;
 				
 				currentInputs.resize(curLength);
-				currentInputs.push(j);
+				currentInputs.push_back(j);
 				short newLength = curLength + 1;
 				
 				if (won) {
