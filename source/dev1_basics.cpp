@@ -3,6 +3,7 @@ using namespace std;
 
 typedef unsigned long long ull;
 typedef unsigned long uint;
+typedef unsigned short us;
 
 stringstream output;
 stringstream info;
@@ -31,6 +32,12 @@ void print(string s) {
 
 string getOutput() {
 	return output.str();
+}
+
+void writeToFile(string s) {
+	ofstream file(filename);
+	file << s;
+	file.close();
 }
 
 template <typename T> class vQueue {

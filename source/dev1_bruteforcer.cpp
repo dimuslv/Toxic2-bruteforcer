@@ -1,6 +1,7 @@
 map<ull, ull> states;
 set<ull> been;
 set<ull> curBeen;
+map<ull, us> shortStates;
 
 const uint OFS_STAND= 0;
 const uint OFS_DUCK = OFS_STAND+ 22 *  1 * 3;
@@ -302,7 +303,7 @@ playerState updateAndCheckFate(playerState p, int inp, bool &lost, bool &won) {
 		p = updateWith(p, inp);
 		
 		lost = hasLost(p);
-		won = hasWon(p);
+		if (!lost) won = hasWon(p);
 		
 		/*if (p.state == DUCK) {
 			update(p);
@@ -485,16 +486,14 @@ void bruteforceMinInputTime() {
 	curFPs = 0;
 	minFPs = -1;
 	
-	auto startTime = std::chrono::steady_clock::now();
+	auto startTime = steady_clock::now();
 	
 	while (!border.empty()) {
 		info << "Border size: " << border.size() << ", FPs: " << curFPs << endl;
 		print();
 		
 		if (activeWrite) {
-			ofstream file(filename);
-			file << getOutput();
-			file.close();
+			writeToFile(getOutput());
 		}
 		
 		for (int i = 0; true; i++) {
@@ -548,15 +547,13 @@ void bruteforceMinInputTime() {
 		}
 	}
 	
-	auto endTime = std::chrono::steady_clock::now();
+	auto endTime = steady_clock::now();
 	
-	info << "Elapsed: " << (std::chrono::duration_cast<std::chrono::seconds>(endTime - startTime)).count() << " seconds\n";
+	info << "Elapsed: " << (duration_cast<seconds>(endTime - startTime)).count() << " seconds\n";
 	info << "State map size: " << states.size() << endl;
 	print();
 	
-	ofstream file(filename);
-	file << getOutput();
-	file.close();
+	writeToFile(getOutput());
 	
 	states.clear();
 }
@@ -577,16 +574,14 @@ void bruteforceMinTime() {
 	curtime = 0;
 	mintime = -1;
 	
-	auto startTime = std::chrono::steady_clock::now();
+	auto startTime = steady_clock::now();
 	
 	while (!border.empty()) {
 		info << "Border size: " << border.size() << ", time: " << curtime << endl;
 		print();
 		
 		if (activeWrite) {
-			ofstream file(filename);
-			file << getOutput();
-			file.close();
+			writeToFile(getOutput());
 		}
 		
 		for (int i = 0; i < border.size(); i++) {
@@ -623,15 +618,13 @@ void bruteforceMinTime() {
 		}
 	}
 	
-	auto endTime = std::chrono::steady_clock::now();
+	auto endTime = steady_clock::now();
 	
-	info << "Elapsed: " << (std::chrono::duration_cast<std::chrono::seconds>(endTime - startTime)).count() << " seconds\n";
+	info << "Elapsed: " << (duration_cast<seconds>(endTime - startTime)).count() << " seconds\n";
 	info << "State map size: " << states.size() << endl;
 	print();
 	
-	ofstream file(filename);
-	file << getOutput();
-	file.close();
+	writeToFile(getOutput());
 	
 	states.clear();
 }
@@ -675,16 +668,14 @@ void bruteforceMinTimeHollow() {
 	curtime = 0;
 	mintime = -1;
 	
-	auto startTime = std::chrono::steady_clock::now();
+	auto startTime = steady_clock::now();
 	
 	while (border.size > 0) {
 		info << "Border size: " << border.size << ", time: " << curtime << endl;
 		print();
 		
 		if (activeWrite) {
-			ofstream file(filename);
-			file << getOutput();
-			file.close();
+			writeToFile(getOutput());
 		}
 		
 		short minCommonPart = SHRT_MAX;
@@ -774,15 +765,146 @@ void bruteforceMinTimeHollow() {
 		}
 	}
 	
-	auto endTime = std::chrono::steady_clock::now();
+	auto endTime = steady_clock::now();
 	
-	info << "Elapsed: " << (std::chrono::duration_cast<std::chrono::seconds>(endTime - startTime)).count() << " seconds\n";
+	info << "Elapsed: " << (duration_cast<seconds>(endTime - startTime)).count() << " seconds\n";
 	info << "State set size: " << been.size() << endl;
 	print();
 	
-	ofstream file(filename);
-	file << getOutput();
-	file.close();
+	writeToFile(getOutput());
+	
+	been.clear();
+}
+
+void bruteforceSpectral() {
+	vector<playerState> startStates;
+	getStartStates(startStates);
+	
+	vQueue<ull> border;
+	vQueue<us> info;
+	
+	cQueue inputs(inputCount);
+	vector<char> currentInputs;	
+	vQueue<short> commonParts;
+	vQueue<short> lengths;
+	//int startStateRegions[startStates.size()];
+	vector<int> startStateRegions(startStates.size());
+	
+	for (int i = 0; i < startStates.size(); i++) {
+		border.push(compressState(startStates[i]));
+		been.insert(compressState(startStates[i]));
+		commonParts.push(0);
+		if (!equalLength) lengths.push(0);
+		startStateRegions[i] = i;
+	}
+	
+	curtime = 0;
+	mintime = -1;
+	
+	auto startTime = steady_clock::now();
+	
+	while (border.size > 0) {
+		info << "Border size: " << border.size << ", time: " << curtime << endl;
+		print();
+		
+		if (activeWrite) {
+			writeToFile(getOutput());
+		}
+		
+		short minCommonPart = SHRT_MAX;
+		int nextStartStateRegion = 0;
+		
+		curBeen.clear();
+		bool remember = curtime % rememberPeriod == 0;
+		
+		int borderSize = border.size;
+		
+		for (int i = 0; i < borderSize; i++) {
+			while (nextStartStateRegion < startStateRegions.size() && i == startStateRegions[nextStartStateRegion]) {
+				startStateRegions[nextStartStateRegion++] = border.size - borderSize + i;
+			}
+			playerState curStartState = startStates[nextStartStateRegion - 1];
+			
+			playerState p = uncompressState(border.pop());
+			short curCommonPart = commonParts.pop();
+			short curLength = equalLength? curtime : lengths.pop();
+			
+			currentInputs.resize(curCommonPart);
+			
+			for (int k = curCommonPart; k < curLength; k++) {
+				currentInputs.push_back(inputs.pop());
+			}
+			
+			bool isNew = true;
+			for (int j = 0; j < 5; j++) {
+				bool lost, won;
+				playerState p2 = updateAndCheckFate(p, j, lost, won);
+				
+				if (lost) {
+					continue;
+				}
+				
+				ull p2c = compressState(p2);
+				if (been.count(p2c) || (!remember && curBeen.count(p2c))) continue;
+				
+				currentInputs.resize(curLength);
+				currentInputs.push_back(j);
+				short newLength = curLength + 1;
+				
+				if (won) {
+					been.insert(p2c);
+					if (mintime == -1) {
+						mintime = curtime;
+					}
+					printHollowSolution(curStartState, p2, currentInputs, newLength);
+				} else {
+					if (remember) {
+						been.insert(p2c);
+					} else {
+						curBeen.insert(p2c);
+					}
+					
+					border.push(p2c);
+					short commonPart;
+					
+					if (isNew) {
+						commonPart = min(curCommonPart, minCommonPart);
+					} else {
+						commonPart = curLength;
+					}
+					commonParts.push(commonPart);
+					if (!equalLength) lengths.push(newLength);
+					
+					for (int k = commonPart; k < newLength; k++) {
+						inputs.push(currentInputs.at(k));
+					}
+					
+					isNew = false;
+				}
+			}
+			
+			if (isNew) {
+				minCommonPart = min(curCommonPart, minCommonPart);
+			} else {
+				minCommonPart = SHRT_MAX;
+			}
+		}
+		startStateRegions.resize(nextStartStateRegion);
+
+		curtime++;
+		
+		if (deviationFromPerfection != -1 && mintime != -1 && curtime > mintime + deviationFromPerfection) {
+			break;
+		}
+	}
+	
+	auto endTime = steady_clock::now();
+	
+	info << "Elapsed: " << (duration_cast<seconds>(endTime - startTime)).count() << " seconds\n";
+	info << "State set size: " << been.size() << endl;
+	print();
+	
+	writeToFile(getOutput());
 	
 	been.clear();
 }
