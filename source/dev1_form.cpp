@@ -5,13 +5,13 @@ const int level_width = dud;
 const int level_height = dud;
 const int leftSideType = 0;
 
-const int bruteforceType = 0;
 const bool advancedMinInput = false;
 
 const bool activeWrite = true;
 const string filename = "result.txt";
 
 const int deviationFromPerfection = -1;
+const bool terminateOnWin = true;
 
 const int customSize = 1;
 
@@ -49,4 +49,15 @@ void getStartStates(vector<playerState> &startStates) {
 	p.state = STAND;
 	p.dir = LEFT;
 	startStates.push_back(p);
+}
+
+int main() {
+	initializeData();
+	
+	bruteforce<MinTimeBF>();
+	//bruteforce<MinTimeHollowBF>();
+	//bruteforce<SpectralBF>();
+	
+	system("pause");
+	return 0;
 }

@@ -4,6 +4,7 @@ using namespace std;
 typedef unsigned long long ull;
 typedef unsigned long uint;
 typedef unsigned short us;
+typedef unsigned char uc;
 
 stringstream output;
 stringstream info;

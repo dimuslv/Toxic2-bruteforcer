@@ -1,7 +1,7 @@
 map<ull, ull> states;
 set<ull> been;
 set<ull> curBeen;
-map<ull, us> shortStates;
+map<ull, us> shortMap;
 
 const uint OFS_STAND= 0;
 const uint OFS_DUCK = OFS_STAND+ 22 *  1 * 3;
@@ -558,7 +558,359 @@ void bruteforceMinInputTime() {
 	states.clear();
 }
 
+void printHollowSolution(playerState &startP, playerState &endP, vector<char> &inputs) {
+	stringstream ans;
+	string letters[] = {"n", "a", "d", "w", "s"};
+	
+	for (int i = 0; i < inputs.size(); i++) {
+		ans << letters[inputs.at(i)];
+	}
+	
+	print(solutionLine(ans.str(), startP, endP));
+}
+
+us getFPs(us info) {
+	return info >> 4;
+}
+
+us getInputs(us info) {
+	return info & 15;
+}
+
+bool equalLength = true;
+
+int inputCount = 5;
+
 int curtime, mintime;
+
+class MinTimeBF {
+	void addStartState(ull cState) {
+		states[cState] = 0;
+	}
+	
+	void prepareNewBorderPass() {}
+	
+	void prepareStateData(int i, int newBorderSize, vector<playerState> &startStates, playerState &p) {}
+	
+	bool hasBeenTo(ull cState) {
+		return states.count(cState);
+	}
+	
+	void insert(ull cState, ull prevCState) {
+		//states[cState] = compressRelative(uncompressState(prevCState), uncompressState(cState));
+		states[cState] = prevCState;
+	}
+	
+	void insertWeak(ull cState, ull prevCState) {
+		insert(cState, prevCState);
+	}
+	
+	void setLastInput(int inp, playerState &p2) {}
+	
+	void printSolution(ull cState) {
+		printMinTimeSolution(cState);
+	}
+	
+	void manageBorderPush() {}
+	
+	int getContainerSize() {
+		return states.size();
+	}
+	
+	void clearContainer() {
+		states.clear();
+	}
+};
+
+class MinTimeHollowBF {
+	cQueue inputs(inputCount);
+	vector<char> currentInputs;	
+	vQueue<short> commonParts;
+	vQueue<short> lengths;
+	vector<int> startStateRegions/*(startStates.size())*/;
+	int nextStartStateRegion = 0;
+	bool remember;
+	playerState curStartState;
+	short curCommonPart;
+	short newCommonPart;
+	short curLength;
+	
+	void addStartState(ull cState) {
+		been.insert(cState);
+		commonParts.push(0);
+		if (!equalLength) lengths.push(0);
+		startStateRegions.push_back(nextStartStateRegion++);
+	}
+	
+	void prepareNewBorderPass() {
+		startStateRegions.resize(nextStartStateRegion);
+		nextStartStateRegion = 0;
+		
+		newCommonPart = SHRT_MAX;
+		
+		curBeen.clear();
+		remember = curtime % rememberPeriod == 0;
+	}
+	
+	void prepareStateData(int i, int newBorderSize, vector<playerState> &startStates, playerState &p) {
+		curCommonPart = commonParts.pop();
+		curLength = equalLength? curtime : lengths.pop();
+		
+		currentInputs.resize(curCommonPart);
+		
+		for (int k = curCommonPart; k < curLength; k++) {
+			currentInputs.push_back(inputs.pop());
+		}
+		
+		newCommonPart = min(newCommonPart, curCommonPart);
+		
+		while (nextStartStateRegion < startStateRegions.size() && i == startStateRegions[nextStartStateRegion]) {
+			startStateRegions[nextStartStateRegion++] = newBorderSize;
+		}
+		curStartState = startStates[nextStartStateRegion - 1];
+	}
+	
+	bool hasBeenTo(ull cState) {
+		return been.count(cState) || (!remember && curBeen.count(cState));
+	}
+	
+	void insert(ull cState, ull prevCState) {
+		been.insert(cState);
+	}
+	
+	void insertWeak(ull cState, ull prevCState) {
+		if (remember) {
+			been.insert(cState);
+		} else {
+			curBeen.insert(cState);
+		}
+	}
+	
+	void setLastInput(int inp, playerState &p2) {
+		currentInputs.resize(curLength);
+		currentInputs.push_back(inp);
+	}
+	
+	void printSolution(ull cState) {
+		printHollowSolution(curStartState, uncompressState(cState), currentInputs);
+	}
+	
+	void manageBorderPush() {
+		commonParts.push(newCommonPart);
+		if (!equalLength) lengths.push(currentInputs.size());
+		
+		for (int k = newCommonPart; k < currentInputs.size(); k++) {
+			inputs.push(currentInputs.at(k));
+		}
+		
+		newCommonPart = curLength;
+	}
+	
+	int getContainerSize() {
+		return been.size();
+	}
+	
+	void clearContainer() {
+		been.clear();
+		curBeen.clear();
+	}
+};
+
+class SpectralBF: public MinTimeHollowBF {
+	vQueue<us> borderInfo;
+	us sourceFPs;
+	bool sourceInputs[5];
+	us incomingFPs;
+	us incomingInputs;
+	us incomingInfo;
+	playerState p;
+	
+	void addStartState(ull cState) {
+		shortMap[cState] = 15;
+		borderInfo.push(15);
+		commonParts.push(0);
+		if (!equalLength) lengths.push(0);
+		startStateRegions.push_back(nextStartStateRegion++);
+	}
+	
+	void prepareNewBorderPass() {
+		startStateRegions.resize(nextStartStateRegion);
+		nextStartStateRegion = 0;
+		
+		newCommonPart = SHRT_MAX;
+		
+		//curBeen.clear();
+		//remember = curtime % rememberPeriod == 0;
+	}
+	
+	void prepareStateData(int i, int newBorderSize, vector<playerState> &startStates, playerState &pI) {
+		MinTimeHollowBF::prepareStateData(i, newBorderSize, startStates, pI);
+		
+		p = pI;
+		us sourceInfo = borderInfo.pop();
+		sourceFPs = getFPs(sourceInfo);
+		for (char i = 0; i < 4; i++) {
+			sourceInputs[i] = sourceInfo & (1 << i);
+		}
+		sourceInputs[4] = sourceInfo & (1 << 3);
+	}
+	
+	void setLastInput(int inp, playerState &p2) {
+		MinTimeHollowBF::setLastInput(inp, p, p2);
+		
+		incomingFPs = sourceFPs;
+		if (!sourceInputs[inp]) {
+			incomingFPs++;
+		}
+		
+		incomingInputs = 1 << max(inp, 3);
+		if (p2.vy == -16) {
+			incomingInputs = 15;
+		} else if (advancedMinInput && (p.state == JUMP || p.state == FALL) && (p2.state == WALK || p2.state == STAND)) {
+			if (p.state == JUMP) {
+				incomingInputs = 15;
+			} else {
+				incomingInputs |= 1 << 3;
+			}
+		}
+	}
+	
+	bool hasBeenTo(ull cState) {
+		us destInfo = shortMap[cState];
+		us destFPs = getFPs(destInfo);
+		us destInputs = getInputs(destInfo);
+		
+		incomingInfo = destInputs | incomingInputs | (incomingFPs << 4);
+		
+		if (!shortMap.count(cState)) {
+			return false;
+		}
+		
+		if (destFPs < incomingFPs) {
+			return true;
+		}
+		
+		if (destFPs > incomingFPs) {
+			return false;
+		}
+		
+		if (~destInputs & incomingInputs) {
+			return false;
+		}
+		
+		if (compressState(p) == cState && destInputs | incomingInputs != 15) {
+			incomingInfo |= 15;
+			return false;
+		}
+		
+		return true;
+	}
+	
+	void insert(ull cState, ull prevCState) {
+		shortMap[cState] = incomingInfo;
+	}
+	
+	void insertWeak(ull cState, ull prevCState) {
+		insert(cState, prevCState);
+	}
+	
+	void manageBorderPush() {
+		MinTimeHollowBF::manageBorderPush();
+		
+		borderInfo.push(incomingInfo);
+	}
+	
+	int getContainerSize() {
+		return shortMap.size();
+	}
+	
+	void clearContainer() {
+		shortMap.clear();
+		//curBeen.clear();
+	}
+};
+
+template <class C> void bruteforce() {
+	C bf;
+	
+	vector<playerState> startStates;
+	getStartStates(startStates);
+	
+	vQueue<ull> border;
+	
+	for (int i = 0; i < startStates.size(); i++) {
+		border.push(compressState(startStates[i]));
+		bf.addStartState(compressState(startStates[i]));
+	}
+	
+	curtime = 0;
+	mintime = -1;
+	
+	auto startTime = steady_clock::now();
+	
+	while (border.size > 0) {
+		info << "Border size: " << border.size << ", time: " << curtime << endl;
+		print();
+		
+		if (activeWrite) {
+			writeToFile(getOutput());
+		}
+		
+		bf.prepareNewBorderPass();
+		
+		int borderSize = border.size;
+		for (int i = 0; i < borderSize; i++) {
+			playerState p = uncompressState(border.pop());
+			
+			bf.prepareStateData(i, border.size - (borderSize - i) + 1, startStates, p);
+			
+			for (int j = 0; j < 5; j++) {
+				bool lost, won;
+				playerState p2 = updateAndCheckFate(p, j, lost, won);
+				
+				if (lost) {
+					continue;
+				}
+				
+				bf.setLastInput(j, p2);
+				
+				ull p2c = compressState(p2);
+				if (bf.hasBeenTo(p2c)) continue;
+				
+				if (won) {
+					bf.insert(p2c, compressState(p));
+					if (mintime == -1) {
+						mintime = curtime;
+					}
+					bf.printSolution(p2c);
+				} else {
+					bf.insertWeak(p2c, compressState(p));
+				}
+				
+				if (!won || !terminateOnWin) {
+					border.push(p2c);
+					bf.manageBorderPush();
+				}
+			}
+		}
+		
+		curtime++;
+		
+		if (deviationFromPerfection != -1 && mintime != -1 && curtime > mintime + deviationFromPerfection) {
+			break;
+		}
+	}
+	
+	auto endTime = steady_clock::now();
+	
+	info << "Elapsed: " << (duration_cast<seconds>(endTime - startTime)).count() << " seconds\n";
+	info << "State container size: " << bf.getContainerSize() << endl;
+	print();
+	
+	writeToFile(getOutput());
+	
+	bf.clearContainer();
+}
 
 void bruteforceMinTime() {
 	vector<playerState> startStates;
@@ -604,7 +956,8 @@ void bruteforceMinTime() {
 						mintime = curtime;
 					}
 					printMinTimeSolution(p2c);
-				} else {
+				}
+				if (!won || !terminateOnWin){
 					newBorder.push_back(p2c);
 				}
 			}
@@ -628,21 +981,6 @@ void bruteforceMinTime() {
 	
 	states.clear();
 }
-
-void printHollowSolution(playerState &startP, playerState &endP, vector<char> &inputs, short length) {
-	stringstream ans;
-	string letters[] = {"n", "a", "d", "w", "s"};
-	
-	for (int i = 0; i < length; i++) {
-		ans << letters[inputs.at(i)];
-	}
-	
-	print(solutionLine(ans.str(), startP, endP));
-}
-
-bool equalLength = true;
-
-int inputCount = 5;
 
 void bruteforceMinTimeHollow() {
 	vector<playerState> startStates;
@@ -730,7 +1068,9 @@ void bruteforceMinTimeHollow() {
 					} else {
 						curBeen.insert(p2c);
 					}
-					
+				}
+				
+				if (!won || !terminateOnWin) {
 					border.push(p2c);
 					short commonPart;
 					
@@ -907,20 +1247,4 @@ void bruteforceSpectral() {
 	writeToFile(getOutput());
 	
 	been.clear();
-}
-
-int main() {
-	initializeData();
-	
-	switch (bruteforceType) {
-		case 0:
-			bruteforceMinTimeHollow();
-			break;
-		case 1:
-			bruteforceMinInputTime();
-			break;
-	}
-	
-	system("pause");
-	return 0;
 }
