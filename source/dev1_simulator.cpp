@@ -39,6 +39,7 @@ struct playerState {
 	int custom = 0;
 	
 	int oldX;
+	int metaData;
 };
 
 bool getOnWall(playerState &t, int x, int y) {

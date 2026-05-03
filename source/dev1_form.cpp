@@ -1,11 +1,13 @@
 #include "dev1_basics.cpp"
 
 const int collision_data[] = {dud};
-const int level_width = dud;
-const int level_height = dud;
+const int totalSize = (sizeof(collision_data) / sizeof(*collision_data) / 2) * 2;
+const int level_width = collision_data[totalSize];
+const int level_height = totalSize / 32 / level_width;
 const int leftSideType = 0;
 
-const bool advancedMinInput = false;
+const bool advancedMinInput = true;
+const bool spectralDescent = true;
 
 const bool activeWrite = true;
 const string filename = "result.txt";
@@ -33,7 +35,7 @@ void doSpecial(playerState &t) {
 	return;
 }
 
-string solutionLine(string inputs, playerState &startP, playerState &endP) {
+string solutionLine(string inputs, const playerState &startP, const playerState &endP) {
 	stringstream answer;
 	answer << inputs << " " << endP._x/2.0 << endl;
 	return answer.str();

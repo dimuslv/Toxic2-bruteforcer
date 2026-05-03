@@ -35,12 +35,6 @@ string getOutput() {
 	return output.str();
 }
 
-void writeToFile(string s) {
-	ofstream file(filename);
-	file << s;
-	file.close();
-}
-
 template <typename T> class vQueue {
 	T *arr;
 	
