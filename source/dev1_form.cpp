@@ -8,6 +8,7 @@ const int leftSideType = 0;
 
 const bool advancedMinInput = true;
 const bool spectralDescent = true;
+const int maxFPs = INT_MAX;
 
 const bool activeWrite = true;
 const string filename = "result.txt";
@@ -56,8 +57,8 @@ void getStartStates(vector<playerState> &startStates) {
 int main() {
 	initializeData();
 	
-	bruteforce<MinTimeBF>();
-	//bruteforce<MinTimeHollowBF>();
+	//bruteforce<MinTimeBF>();
+	bruteforce<MinTimeHollowBF>();
 	//bruteforce<SpectralBF>();
 	
 	system("pause");

@@ -2,6 +2,7 @@ map<ull, ull> states;
 set<ull> been;
 set<ull> curBeen;
 map<ull, us> shortMap;
+map<ull, us> curShortMap;
 
 const uint OFS_STAND= 0;
 const uint OFS_DUCK = OFS_STAND+ 22 *  1 * 3;
@@ -756,7 +757,7 @@ class SpectralBF: public MinTimeHollowBF {
 	us incomingInputs;
 	us incomingInfo;
 	playerState p;
-	int minFPs = INT_MAX;
+	int minFPs = maxFPs;
 	
 	public:
 	
@@ -774,8 +775,8 @@ class SpectralBF: public MinTimeHollowBF {
 		
 		newCommonPart = SHRT_MAX;
 		
-		//curBeen.clear();
-		//remember = curtime % rememberPeriod == 0;
+		curShortMap.clear();
+		remember = curtime % rememberPeriod == 0;
 	}
 	
 	void prepareStateData(int i, int newBorderSize, vector<playerState> &startStates, playerState &pI) {
@@ -828,11 +829,16 @@ class SpectralBF: public MinTimeHollowBF {
 		
 		incomingInfo = incomingInputs | (incomingFPs << 4);
 		
-		if (!shortMap.count(cState)) {
+		us destInfo;
+		
+		if (shortMap.count(cState)) {
+			destInfo = shortMap[cState];
+		} else if (!remember && curShortMap.count(cState)) {
+			destInfo = curShortMap[cState];
+		} else {
 			return false;
 		}
 		
-		us destInfo = shortMap[cState];
 		us destFPs = getFPs(destInfo);
 		us destInputs = getInputs(destInfo);
 		
@@ -873,7 +879,11 @@ class SpectralBF: public MinTimeHollowBF {
 	}
 	
 	void insertWeak(ull cState, ull prevCState) {
-		insert(cState, prevCState);
+		if (remember) {
+			insert(cState, prevCState);
+		} else {
+			curShortMap[cState] = incomingInfo;
+		}
 	}
 	
 	void manageBorderPush() {
@@ -888,7 +898,7 @@ class SpectralBF: public MinTimeHollowBF {
 	
 	void clearContainer() {
 		shortMap.clear();
-		//curBeen.clear();
+		curShortMap.clear();
 	}
 };
 
