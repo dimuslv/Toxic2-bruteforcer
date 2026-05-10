@@ -7,8 +7,8 @@ const int level_height = totalSize / 32 / level_width;
 const int leftSideType = 0;
 
 const bool advancedMinInput = true;
-const bool spectralDescent = true;
-const int maxFPs = INT_MAX;
+const bool valueDescent = true;
+const int maxValue = USHRT_MAX;
 
 const bool activeWrite = true;
 const string filename = "result.txt";
@@ -59,6 +59,7 @@ int main() {
 	
 	//bruteforce<MinTimeBF>();
 	bruteforce<MinTimeHollowBF>();
+	//bruteforce<MinTimeOptimizerBF()>();
 	//bruteforce<SpectralBF>();
 	
 	system("pause");

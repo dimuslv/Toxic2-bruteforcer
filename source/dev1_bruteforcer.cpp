@@ -666,13 +666,17 @@ class MinTimeHollowBF {
 	short newCommonPart;
 	short curLength;
 	
+	void manageHollowStartState() {
+		commonParts.push(0);
+		if (!equalLength) lengths.push(0);
+		startStateRegions.push_back(nextStartStateRegion++);
+	}
+	
 	public:
 	
 	void addStartState(ull cState) {
 		been.insert(cState);
-		commonParts.push(0);
-		if (!equalLength) lengths.push(0);
-		startStateRegions.push_back(nextStartStateRegion++);
+		manageHollowStartState();
 	}
 	
 	void prepareNewBorderPass() {
@@ -749,24 +753,23 @@ class MinTimeHollowBF {
 	}
 };
 
-class SpectralBF: public MinTimeHollowBF {
+class MinTimeOptimizerBF: public MinTimeHollowBF {
+	protected:
 	vQueue<us> borderInfo;
-	us sourceFPs;
-	bool sourceInputs[5];
-	us incomingFPs;
-	us incomingInputs;
+	us initValue = USHRT_MAX;
+	us minValue = maxValue;
 	us incomingInfo;
-	playerState p;
-	int minFPs = maxFPs;
 	
 	public:
 	
+	MinTimeOptimizerBF(us init) {
+		initValue = init;
+	}
+	
 	void addStartState(ull cState) {
-		shortMap[cState] = 15;
-		borderInfo.push(15);
-		commonParts.push(0);
-		if (!equalLength) lengths.push(0);
-		startStateRegions.push_back(nextStartStateRegion++);
+		shortMap[cState] = initValue;
+		borderInfo.push(initValue);
+		manageHollowStartState();
 	}
 	
 	void prepareNewBorderPass() {
@@ -778,6 +781,79 @@ class SpectralBF: public MinTimeHollowBF {
 		curShortMap.clear();
 		remember = curtime % rememberPeriod == 0;
 	}
+	
+	void prepareStateData(int i, int newBorderSize, vector<playerState> &startStates, playerState &p) {
+		MinTimeHollowBF::prepareStateData(i, newBorderSize, startStates, p);
+		
+		p.metaData = borderInfo.pop();
+	}
+	
+	void setLastInput(int inp, playerState &p2) {
+		MinTimeHollowBF::setLastInput(inp, p2);
+		
+		incomingInfo = p2.metaData;
+	}
+	
+	bool hasBeenTo(ull cState) {
+		if (valueDescent && incomingInfo > minValue) {
+			return true;
+		}
+		
+		if (!remember && curShortMap.count(cState)) {
+			return curShortMap[cState] <= incomingInfo;
+		}
+		
+		return shortMap.count(cState) && shortMap[cState] <= incomingInfo;
+	}
+	
+	void printSolution(ull cState) {
+		playerState p2 = uncompressState(cState);
+		p2.metaData = incomingInfo;
+		printHollowSolution(curStartState, p2, currentInputs);
+		
+		if (incomingInfo < minValue) {
+			minValue = incomingInfo;
+		}
+	}
+	
+	void insert(ull cState, ull prevCState) {
+		shortMap[cState] = incomingInfo;
+	}
+	
+	void insertWeak(ull cState, ull prevCState) {
+		if (remember) {
+			insert(cState, prevCState);
+		} else {
+			curShortMap[cState] = incomingInfo;
+		}
+	}
+	
+	void manageBorderPush() {
+		MinTimeHollowBF::manageBorderPush();
+		
+		borderInfo.push(incomingInfo);
+	}
+	
+	int getContainerSize() {
+		return shortMap.size();
+	}
+	
+	void clearContainer() {
+		shortMap.clear();
+		curShortMap.clear();
+	}
+};
+
+class SpectralBF: public MinTimeOptimizerBF {
+	us sourceFPs;
+	bool sourceInputs[5];
+	us incomingFPs;
+	us incomingInputs;
+	playerState p;
+	
+	public:
+	
+	SpectralBF() : MinTimeOptimizerBF(15);
 	
 	void prepareStateData(int i, int newBorderSize, vector<playerState> &startStates, playerState &pI) {
 		MinTimeHollowBF::prepareStateData(i, newBorderSize, startStates, pI);
@@ -823,7 +899,7 @@ class SpectralBF: public MinTimeHollowBF {
 	}
 	
 	bool hasBeenTo(ull cState) {
-		if (spectralDescent && incomingFPs > minFPs) {
+		if (valueDescent && incomingFPs > minValue) {
 			return true;
 		}
 		
@@ -869,36 +945,9 @@ class SpectralBF: public MinTimeHollowBF {
 		p2.metaData = incomingFPs;
 		printHollowSolution(curStartState, p2, currentInputs);
 		
-		if (incomingFPs < minFPs) {
-			minFPs = incomingFPs;
+		if (incomingFPs < minValue) {
+			minValue = incomingFPs;
 		}
-	}
-	
-	void insert(ull cState, ull prevCState) {
-		shortMap[cState] = incomingInfo;
-	}
-	
-	void insertWeak(ull cState, ull prevCState) {
-		if (remember) {
-			insert(cState, prevCState);
-		} else {
-			curShortMap[cState] = incomingInfo;
-		}
-	}
-	
-	void manageBorderPush() {
-		MinTimeHollowBF::manageBorderPush();
-		
-		borderInfo.push(incomingInfo);
-	}
-	
-	int getContainerSize() {
-		return shortMap.size();
-	}
-	
-	void clearContainer() {
-		shortMap.clear();
-		curShortMap.clear();
 	}
 };
 
