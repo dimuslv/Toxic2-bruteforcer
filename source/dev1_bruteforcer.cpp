@@ -853,7 +853,7 @@ class SpectralBF: public MinTimeOptimizerBF {
 	
 	public:
 	
-	SpectralBF() : MinTimeOptimizerBF(15);
+	SpectralBF() : MinTimeOptimizerBF(15) {}
 	
 	void prepareStateData(int i, int newBorderSize, vector<playerState> &startStates, playerState &pI) {
 		MinTimeHollowBF::prepareStateData(i, newBorderSize, startStates, pI);
