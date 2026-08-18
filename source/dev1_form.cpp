@@ -1,7 +1,7 @@
 #include "dev1_basics.cpp"
 
 const int collision_data[] = {dud};
-const int totalSize = (sizeof(collision_data) / sizeof(*collision_data) / 2) * 2;
+const int totalSize = (arraySize(collision_data) / 2) * 2;
 const int level_width = collision_data[totalSize];
 const int level_height = totalSize / 32 / level_width;
 const int leftSideType = 0;
@@ -22,6 +22,7 @@ const int rememberPeriod = 1;
 
 #include "dev1_collision.cpp"
 #include "dev1_simulator.cpp"
+#include "dev1_extra.cpp"
 #include "dev1_bruteforcer.cpp"
 
 bool hasLostCustom(playerState &p) {
@@ -32,8 +33,9 @@ bool hasWon(playerState &p) {
 	return dud;
 }
 
-void doSpecial(playerState &t) {
-	return;
+void doSpecial(playerState &p) {
+	//int conveyors[] = {x, x2, y, +-6};
+	//doConveyors(p, conveyors, arraySize(conveyors));
 }
 
 string solutionLine(string inputs, const playerState &startP, const playerState &endP) {

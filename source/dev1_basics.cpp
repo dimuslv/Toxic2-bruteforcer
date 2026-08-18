@@ -6,6 +6,8 @@ typedef unsigned long uint;
 typedef unsigned short us;
 typedef unsigned char uc;
 
+#define arraySize(arr) (sizeof(arr) / sizeof(*(arr)))
+
 stringstream output;
 stringstream info;
 

@@ -762,6 +762,8 @@ class MinTimeOptimizerBF: public MinTimeHollowBF {
 	
 	public:
 	
+	MinTimeOptimizerBF() {}
+	
 	MinTimeOptimizerBF(us init) {
 		initValue = init;
 	}

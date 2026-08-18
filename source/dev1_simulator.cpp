@@ -1,5 +1,7 @@
 const int LEFT = 0;
 const int RIGHT = 1;
+const int UP = 2;
+const int DOWN = 3;
 
 const int START = 0;
 const int STAND = 1;
