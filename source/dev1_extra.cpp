@@ -24,9 +24,10 @@ void paintSpike(int x, int y, int dir) {
 	int baseY = (y-1) * 32;
 	for (int cx = (x-1) * 64; cx < (x+2) * 64; cx++) {
 		for (int cy = (y-1) * 32; cy < (y+3) * 32; cy++) {
-			int chunkNum = 
-			damageData[LEFT][cx][cy] |= spikeData[dir][LEFT][(cy - baseY) * 6 + (cx - baseX) / 32] & (1 << ((cx - baseX) % 32));
-			damageData[RIGHT][cx][cy] |= spikeData[dir][RIGHT][(cy - baseY) * 6 + (cx - baseX) / 32] & (1 << ((cx - baseX) % 32));
+			int chunkNum = (cy - baseY) * 6 + (cx - baseX) / 32;
+			int bitMask = 1 << ((cx - baseX) % 32);
+			damageData[LEFT][cx][cy] |= spikeData[dir][LEFT][chunkNum] & bitMask;
+			damageData[RIGHT][cx][cy] |= spikeData[dir][RIGHT][chunkNum] & bitMask;
 		}
 	}
 }

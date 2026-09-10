@@ -797,10 +797,6 @@ class MinTimeOptimizerBF: public MinTimeHollowBF {
 	}
 	
 	bool hasBeenTo(ull cState) {
-		if (valueDescent && incomingInfo > minValue) {
-			return true;
-		}
-		
 		if (!remember && curShortMap.count(cState)) {
 			return curShortMap[cState] <= incomingInfo;
 		}
@@ -809,6 +805,10 @@ class MinTimeOptimizerBF: public MinTimeHollowBF {
 	}
 	
 	void printSolution(ull cState) {
+		if (valueDescent && incomingInfo > minValue) {
+			return;
+		}
+		
 		playerState p2 = uncompressState(cState);
 		p2.metaData = incomingInfo;
 		printHollowSolution(curStartState, p2, currentInputs);
