@@ -14,9 +14,9 @@ const uint OFS_END  = OFS_WALL + 99 *  1 * 5;//10983
 
 string stateInfoLine(playerState t) {
 	stringstream result;
-	result << "x: " << (((double)t._x) / 2) << ", ";
+	result << "x: " << t._x << ", ";
 	result << "y: " << t._y << ", ";
-	result << "vx: " << (((double)t.vx) / 2) << ", ";
+	result << "vx: " << t.vx << ", ";
 	result << "vy: " << t.vy << ", ";
 	result << "state: " << t.state << ", ";
 	result << "dir: " << t.dir << ", ";
@@ -35,7 +35,7 @@ ull compressState(const playerState &t) {
 	a += (t._y - 40);
 	
 	a *= level_width * 64;
-	a += t._x;
+	a += t._x.twiceValue;
 	
 	a *= customSize;
 	a += t.custom;
@@ -50,7 +50,7 @@ ull compressState(const playerState &t) {
 	
 	if (t.state == STAND || t.state == DUCK) {
 		b *= 22;
-		int vx = roundUp(t.vx) / 2;
+		int vx = t.vx.roundUp();
 		if (vx < -2) {
 			b += vx + 12;
 		} else if (vx < 3) {
@@ -60,15 +60,15 @@ ull compressState(const playerState &t) {
 		}
 	} else if (t.state == WALK || t.state == JUMP || t.state == FALL) {
 		b *= 51;
-		b += t.vx + 25;
+		b += (t.vx + 12_5).twiceValue;
 	} else if (t.state == WALL) {
 		b *= 99;
 		if (t.left_edge) {
-			b += (t.rx - t._x + 49);
+			b += (t.rx - t._x + 24_5).twiceValue;
 		} else if (t.right_edge) {
-			b += (t.lx - t._x + 49);
+			b += (t.lx - t._x + 24_5).twiceValue;
 		} else {
-			b += 49;
+			b += 24_5 .twiceValue;
 		}
 	}
 	
@@ -86,7 +86,7 @@ ull compressState(const playerState &t) {
 			int d = dUp(t.right_edge? t.lx : t.rx, t._y);
 			if (d > 1 && d <= 101) {
 				b += 2;
-				b += ((t._x - t.oldX) / 2) + 19;
+				b += (t._x - t.oldX).round() + 19;
 			} else {
 				b++;
 			}
@@ -201,7 +201,7 @@ playerState uncompressState(ull c) {
 		if (temp % 42 == 1) {
 			t.vy = -1;
 		} else if (temp % 42 > 1) {
-			oldXDisplacement = ((temp % 42) - 2 - 19) * 2;
+			oldXDisplacement = (temp % 42) - 2 - 19;
 		}
 		temp /= 42;
 	} else if (t.state == WALK) {
@@ -211,19 +211,19 @@ playerState uncompressState(ull c) {
 	
 	if (t.state == STAND || t.state == DUCK) {
 		if (temp % 22 < 10) {
-			t.vx = (temp % 22 - 12) * 2;
+			t.vx = temp % 22 - 12;
 		} else if (temp % 22 == 10) {
 			t.vx = 0;
 		} else {
-			t.vx = (temp % 22 - 8) * 2;
+			t.vx = temp % 22 - 8;
 		}
 		temp /= 22;
 	} else if (t.state == WALK || t.state == JUMP || t.state == FALL) {
-		t.vx = temp % 51 - 25;
+		t.vx = div2(temp % 51) - 12_5;
 		temp /= 51;
 	} else if (t.state == WALL) {
 		t.left_edge = true;
-		t.rx = temp % 99 - 49;
+		t.rx = div2(temp % 99) - 24_5;
 		temp /= 99;
 	}
 	
@@ -241,7 +241,7 @@ playerState uncompressState(ull c) {
 	t.custom = c % customSize;
 	c /= customSize;
 	
-	t._x = c % (level_width * 64);
+	t._x = div2(c % (level_width * 64));
 	t.rx += t._x;
 	c /= level_width * 64;
 	
@@ -278,7 +278,7 @@ playerState uncompressRelative(ull c, const playerState &t2) {
 bool hasLostCustom(playerState &p);
 
 bool hasLost(playerState &p) {
-	return (p._x < 24 || p._x >= level_width * 64 - 24 || p._y > level_height * 32 - 64 || p._y < 46 || hasLostCustom(p));
+	return (p._x < 12 || p._x >= level_width * 32 - 12 || p._y > level_height * 32 - 64 || p._y < 46 || hasLostCustom(p));
 }
 
 bool hasWon(playerState &p);

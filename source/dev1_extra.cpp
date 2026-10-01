@@ -38,11 +38,11 @@ void doConveyors(playerState &p, int *conveyors, int len) {
 	}
 	
 	for (int i = 0; i < len; i += 4) {
-		if (p._x > (conveyors[i] << 6) - 32 &&
-		p._x < (conveyors[i+1] << 6) + 32 &&
+		if (p._x > (conveyors[i] << 5) - 16 &&
+		p._x < (conveyors[i+1] << 5) + 16 &&
 		p._y >= (conveyors[i+2] << 5) - 33 &&
 		p._y < (conveyors[i+2] << 5) + 66) {
-			int temp = p.vx;
+			hint temp = p.vx;
 			p._x += checkWalls(p, conveyors[i+3], p.state == DUCK);
 			p.vx = temp;
 			return;

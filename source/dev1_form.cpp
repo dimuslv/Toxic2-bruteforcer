@@ -34,16 +34,16 @@ bool hasWon(playerState &p) {
 }
 
 void doSpecial(playerState &p) {
-	/*if (damageData[p.dir][p._x][p._y] && !p.hit) {
+	/*if (damageData[p.dir][p._x.twiceValue][p._y] && !p.hit) {
 		startHit(p);
 	}*/
-	//int conveyors[] = {x, x2, y, +-6};
+	//int conveyors[] = {x, x2, y, +-3};
 	//doConveyors(p, conveyors, arraySize(conveyors));
 }
 
 string solutionLine(string inputs, const playerState &startP, const playerState &endP) {
 	stringstream answer;
-	answer << inputs << " " << endP._x/2.0 << endl;
+	answer << inputs << " " << endP._x << endl;
 	return answer.str();
 }
 

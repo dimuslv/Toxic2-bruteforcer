@@ -15,16 +15,16 @@ const int DIE = 8;
 const int END = 9;
 
 struct playerState {
-	int _x;
+	hint _x;
 	int _y;
-	int vx = 0;
+	hint vx = 0;
 	int vy = 0;
 	int anim = STAND;
 	int animDir;
 	int state = STAND;
 	int dir;
-	int lx;
-	int rx;
+	hint lx;
+	hint rx;
 	int wall_count = 0;
 	int fall_count;
 	bool wall_jump;
@@ -40,31 +40,31 @@ struct playerState {
 	
 	int custom = 0;
 	
-	int oldX;
+	hint oldX;
 	int metaData;
 };
 
-bool getOnWall(playerState &t, int x, int y) {
+bool getOnWall(playerState &t, hint x, int y) {
 	if (t.dir == LEFT) {
-		return collision(x,y) && !collision(x+2,y);
+		return collision(x,y) && !collision(x+1,y);
 	} else {
-		return collision(x,y) && !collision(x-2,y);
+		return collision(x,y) && !collision(x-1,y);
 	}
 }
 
-bool getOnGround(int x, int y) {
+bool getOnGround(hint x, int y) {
 	return collision(x,y) && !collision(x,y-1);
 }
 
-bool getInGround(int x, int y) {
+bool getInGround(hint x, int y) {
 	return collision(x,y) && collision(x,y-1);
 }
 
-bool getInAir(int x, int y) {
+bool getInAir(hint x, int y) {
 	return !collision(x,y) && !collision(x,y-1);
 }
 
-bool getInWall(int x, int y) {
+bool getInWall(hint x, int y) {
 	return collision(x,y);
 }
 
@@ -92,15 +92,15 @@ void updateAnim(playerState &t) {
 
 void calculateDistance(playerState &t, bool b) {
 	if (t.anim == STAND || t.anim == WALK || t.anim == JUMP || t.anim == FALL || t.anim == HIT) {
-		t.lx = t._x - (12 << 1);
-		t.rx = t._x + (12 << 1);
+		t.lx = t._x - 12;
+		t.rx = t._x + 12;
 	} else if (t.anim == DUCK) {
 		if (t.dir == LEFT) {
-			t.lx = t._x - (26 << 1);
-			t.rx = t._x + (22 << 1);
+			t.lx = t._x - 26;
+			t.rx = t._x + 22;
 		} else {
-			t.lx = t._x - (22 << 1);
-			t.rx = t._x + (26 << 1);
+			t.lx = t._x - 22;
+			t.rx = t._x + 26;
 		}
 	} else {
 		t.lx = 0;
@@ -216,7 +216,7 @@ void adjustToFloor(playerState &t) {
 	}
 }
 
-int checkWalls(playerState &t, int v, bool duck) {
+hint checkWalls(playerState &t, hint v, bool duck) {
 	
 	int offsets[5];
 	
@@ -252,13 +252,13 @@ int checkWalls(playerState &t, int v, bool duck) {
 	if (v > 0) {
 		int w;
 		if (t.anim == DUCK) {
-			w = ((t.animDir == RIGHT)? 26 : 22) << 1;
+			w = (t.animDir == RIGHT)? 26 : 22;
 		} else {
-			w = 12 << 1;
+			w = 12;
 		}
 		
 		if (!(getInWall(t._x + w + v, t._y + offsets[0]) || getInWall(t._x + w + v, t._y + offsets[1]) || getInWall(t._x + w + v, t._y + offsets[2]) || getInWall(t._x + w + v, t._y + offsets[3]) || getInWall(t._x + w + v, t._y + offsets[4]))) {
-			/*for (int i = 2; i <= 12 << 1; i += 2) {
+			/*for (int i = 1; i <= 12; i++) {
 				for (int j = 0; j < 5; j++) {
 					if (getInWall(t._x + w + i, t._y + offsets[j])) {
 						t.wall_jump = true;
@@ -266,20 +266,20 @@ int checkWalls(playerState &t, int v, bool duck) {
 							return v;
 						}
 						t.vx = 0;
-						return i - 2;
+						return i - 1;
 					}
 				}
 			}*/
-			int d = -dRight(t._x + w + 2, t._y + offsets[0]);
+			int d = -dRight(t._x + w + 1, t._y + offsets[0]);
 			for (int i = 1; i < 5; i++) {
-				d = min(d, -dRight(t._x + w + 2, t._y + offsets[i]));
+				d = min(d, -dRight(t._x + w + 1, t._y + offsets[i]));
 			}
 			
 			if (d < 0) d = 0;
 			
-			if (d <= 22) {
+			if (d <= 11) {
 				t.wall_jump = true;
-				if (v < d + 2) {
+				if (v < d + 1) {
 					return v;
 				}
 				t.vx = 0;
@@ -289,7 +289,7 @@ int checkWalls(playerState &t, int v, bool duck) {
 			return v;
 		}
 		
-		/*for (int i = 2; i <= 12 << 1; i += 2) {
+		/*for (int i = 1; i <= 12; i++) {
 			int freeCount = 0;
 			for (int j = 0; j < 5; j++) {
 				if (!getInWall(t._x + w + v - i, t._y + offsets[j])) {
@@ -313,7 +313,7 @@ int checkWalls(playerState &t, int v, bool duck) {
 				int d = dLeft(t._x + w + v - i, t._y + offsets[j]);
 				if (d > 0) {
 					i += d;
-					if (i > 12 << 1) {
+					if (i > 12) {
 						return 0;
 					}
 					
@@ -329,13 +329,13 @@ int checkWalls(playerState &t, int v, bool duck) {
 	} else if (v < 0) {
 		int w;
 		if (t.anim == DUCK) {
-			w = ((t.animDir == LEFT)? -26 : -22) << 1;
+			w = (t.animDir == LEFT)? -26 : -22;
 		} else {
-			w = (-12) << 1;
+			w = -12;
 		}
 		
 		if (!(getInWall(t._x + w + v, t._y + offsets[0]) || getInWall(t._x + w + v, t._y + offsets[1]) || getInWall(t._x + w + v, t._y + offsets[2]) || getInWall(t._x + w + v, t._y + offsets[3]) || getInWall(t._x + w + v, t._y + offsets[4]))) {
-			/*for (int i = 2; i <= 12 << 1; i += 2) {
+			/*for (int i = 1; i <= 12; i++) {
 				for (int j = 0; j < 5; j++) {
 					if (getInWall(t._x + w - i, t._y + offsets[j])) {
 						t.wall_jump = true;
@@ -343,21 +343,21 @@ int checkWalls(playerState &t, int v, bool duck) {
 							return v;
 						}
 						t.vx = 0;
-						return -(i - 2);
+						return -(i - 1);
 					}
 				}
 			}*/
 			
-			int d = -dLeft(t._x + w - 2, t._y + offsets[0]);
+			int d = -dLeft(t._x + w - 1, t._y + offsets[0]);
 			for (int i = 1; i < 5; i++) {
-				d = min(d, -dLeft(t._x + w - 2, t._y + offsets[i]));
+				d = min(d, -dLeft(t._x + w - 1, t._y + offsets[i]));
 			}
 			
 			if (d < 0) d = 0;
 			
-			if (d <= 22) {
+			if (d <= 11) {
 				t.wall_jump = true;
-				if (-v < d + 2) {
+				if (-v < d + 1) {
 					return v;
 				}
 				t.vx = 0;
@@ -367,7 +367,7 @@ int checkWalls(playerState &t, int v, bool duck) {
 			return v;
 		}
 		
-		/*for (int i = 2; i <= 12 << 1; i += 2) {
+		/*for (int i = 1; i <= 12; i++) {
 			int freeCount = 0;
 			for (int j = 0; j < 5; j++) {
 				if (!getInWall(t._x + w + v + i, t._y + offsets[j])) {
@@ -391,11 +391,11 @@ int checkWalls(playerState &t, int v, bool duck) {
 				int d = dRight(t._x + w + v + i, t._y + offsets[j]);
 				if (d > 0) {
 					i += d;
-					if (i > 12 << 1) {
+					if (i > 12) {
 						return 0;
 					}
 					
-					wasUpdated = true;;
+					wasUpdated = true;
 				}
 			}
 		} while (wasUpdated);
@@ -411,9 +411,9 @@ int checkWalls(playerState &t, int v, bool duck) {
 int checkCeiling(playerState &t, int v) {
 	int m;
 	if (t.dir == LEFT) {
-		m = -2;
+		m = -1;
 	} else if (t.dir == RIGHT) {
-		m = 2;
+		m = 1;
 	}
 	if (v >= 0) {
 		return v;
@@ -500,9 +500,9 @@ int checkFloor(playerState &t, int v) {
 		if (getInWall(t._x, t._y + i)) {
 			return i;
 		}
-	}*/
+	}
+	return v;*/
 	return min(v, max(0, -dDown(t._x, t._y + 1)) + 1);
-	return v;
 }
 
 void startJump(playerState &t) {
@@ -545,14 +545,14 @@ void doStand(playerState &t) {
 	t.vy = 0;
 	
 	if (t.vx != 0) {
-		t.vx = roundUp(t.vx);
+		t.vx = t.vx.roundUp();
 		if (t.vx > 0) {
-			t.vx -= 4;
+			t.vx -= 2;
 			if (t.vx <= 0) {
 				t.vx = 0;
 			}
 		} else {
-			t.vx += 4;
+			t.vx += 2;
 			if (t.vx >= 0) {
 				t.vx = 0;
 			}
@@ -610,14 +610,14 @@ void doStand(playerState &t) {
 
 void doDuck(playerState &t) {
 	if (t.vx != 0) {
-		t.vx = roundUp(t.vx);
+		t.vx = t.vx.roundUp();
 		if (t.vx > 0) {
-			t.vx -= 4;
+			t.vx -= 2;
 			if (t.vx <= 0) {
 				t.vx = 0;
 			}
 		} else if (t.vx < 0) {
-			t.vx += 4;
+			t.vx += 2;
 			if (t.vx >= 0) {
 				t.vx = 0;
 			}
@@ -665,35 +665,35 @@ void doWalk(playerState &t) {
 	}
 	
 	if (t.DIR_PRESSED == LEFT) {
-		if (abs(t.vx) < 12 << 1) {
+		if (abs(t.vx) < 12) {
 			if (t.vx > 0) {
-				t.vx -= 3;
+				t.vx -= 1_5;
 			} else {
-				t.vx -= 2;
+				t.vx -= 1;
 			}
 		} else {
 			if (t.vx > 0) {
-				t.vx -= 3;
+				t.vx -= 1_5;
 			}
-			if (abs(t.vx) > 12 << 1) {
-				t.vx = - (12 << 1);
+			if (abs(t.vx) > 12) {
+				t.vx = -12;
 			}
 		}
 		t.state = WALK;
 		t.dir = t.DIR_PRESSED;
 	} else if (t.DIR_PRESSED == RIGHT) {
-		if (abs(t.vx) < 12 << 1) {
+		if (abs(t.vx) < 12) {
 			if (t.vx < 0) {
-				t.vx += 3;
+				t.vx += 1_5;
 			} else {
-				t.vx += 2;
+				t.vx += 1;
 			}
 		} else {
 			if (t.vx < 0) {
-				t.vx += 3;
+				t.vx += 1_5;
 			}
-			if (abs(t.vx) > 12 << 1) {
-				t.vx = 12 << 1;
+			if (abs(t.vx) > 12) {
+				t.vx = 12;
 			}
 		}
 		t.state = WALK;
@@ -720,43 +720,43 @@ void doJump(playerState &t) {
 	}
 	
 	if (t.DIR_PRESSED == LEFT) {
-		if (abs(t.vx) < 12 << 1) {
+		if (abs(t.vx) < 12) {
 			if (t.vx > 0) {
-				t.vx -= 3;
+				t.vx -= 1_5;
 			} else {
-				t.vx -= 2;
+				t.vx -= 1;
 			}
 		} else {
 			if (t.vx > 0) {
-				t.vx -= 3;
+				t.vx -= 1_5;
 			}
-			if (abs(t.vx) > 12 << 1) {
-				t.vx = - (12 << 1);
+			if (abs(t.vx) > 12) {
+				t.vx = -12;
 			}
 		}
 		
 		t.dir = t.DIR_PRESSED;
 	} else if (t.DIR_PRESSED == RIGHT) {
-		if (abs(t.vx) < 12 << 1) {
+		if (abs(t.vx) < 12) {
 			if (t.vx < 0) {
-				t.vx += 3;
+				t.vx += 1_5;
 			} else {
-				t.vx += 2;
+				t.vx += 1;
 			}
 		} else {
 			if (t.vx < 0) {
-				t.vx += 3;
+				t.vx += 1_5;
 			}
-			if (abs(t.vx) > 12 << 1) {
-				t.vx = 12 << 1;
+			if (abs(t.vx) > 12) {
+				t.vx = 12;
 			}
 		}
 		
 		t.dir = t.DIR_PRESSED;
 	} else if (t.vx > 0) {
-		t.vx -= 2;
+		t.vx -= 1;
 	} else if (t.vx < 0) {
-		t.vx += 2;
+		t.vx += 1;
 	}
 	
 	t.wall_jump = false;
@@ -818,43 +818,43 @@ void doFall(playerState &t) {
 	t._y += checkFloor(t, t.vy);
 	
 	if (t.DIR_PRESSED == LEFT) {
-		if (abs(t.vx) < 12 << 1) {
+		if (abs(t.vx) < 12) {
 			if (t.vx > 0) {
-				t.vx -= 3;
+				t.vx -= 1_5;
 			} else {
-				t.vx -= 2;
+				t.vx -= 1;
 			}
 		} else {
 			if (t.vx > 0) {
-				t.vx -= 3;
+				t.vx -= 1_5;
 			}
-			if (abs(t.vx) > 12 << 1) {
-				t.vx = - (12 << 1);
+			if (abs(t.vx) > 12) {
+				t.vx = -12;
 			}
 		}
 		
 		t.dir = t.DIR_PRESSED;
 	} else if (t.DIR_PRESSED == RIGHT) {
-		if (abs(t.vx) < 12 << 1) {
+		if (abs(t.vx) < 12) {
 			if (t.vx < 0) {
-				t.vx += 3;
+				t.vx += 1_5;
 			} else {
-				t.vx += 2;
+				t.vx += 1;
 			}
 		} else {
 			if (t.vx < 0) {
-				t.vx += 3;
+				t.vx += 1_5;
 			}
-			if (abs(t.vx) > 12 << 1) {
-				t.vx = 12 << 1;
+			if (abs(t.vx) > 12) {
+				t.vx = 12;
 			}
 		}
 		
 		t.dir = t.DIR_PRESSED;
 	} else if (t.vx > 0) {
-		t.vx -= 2;
+		t.vx -= 1;
 	} else if (t.vx < 0) {
-		t.vx += 2;
+		t.vx += 1;
 	}
 	
 	t.wall_jump = false;
@@ -924,7 +924,7 @@ void doWall(playerState &t) {
 			adjustToFloor(t);
 			return;
 		}
-		if (!getOnWall(t, t._x - (13 << 1), t._y - 30)) {
+		if (!getOnWall(t, t._x - 13, t._y - 30)) {
 			t.fall_anim_count = 0;
 			t.state = FALL;
 			return;
@@ -940,16 +940,16 @@ void doWall(playerState &t) {
 			adjustToFloor(t);
 			return;
 		}
-		if (!getOnWall(t, t._x + (13 << 1), t._y - 30)) {
+		if (!getOnWall(t, t._x + 13, t._y - 30)) {
 			t.fall_anim_count = 0;
 			t.state = FALL;
 			return;
 		}
 	} else if (t.dir == LEFT && t.DIR_PRESSED == RIGHT) {
-		t.vx = 6 << 1;
+		t.vx = 6;
 		startWallJump(t);
 	} else if (t.dir == RIGHT && t.DIR_PRESSED == LEFT) {
-		t.vx = -(6 << 1);
+		t.vx = -6;
 		startWallJump(t);
 	} else {
 		t.fall_count++;

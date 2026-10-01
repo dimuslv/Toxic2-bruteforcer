@@ -11,16 +11,6 @@ typedef unsigned char uc;
 stringstream output;
 stringstream info;
 
-int roundDown(int a) {
-	if (a & 1) return a - 1;
-	return a;
-}
-
-int roundUp(int a) {
-	if (a & 1) return a + 1;
-	return a;
-}
-
 void print() {
 	cout << info.str();
 	output << info.str();
@@ -35,6 +25,95 @@ void print(string s) {
 
 string getOutput() {
 	return output.str();
+}
+
+template <typename T> class Half {
+	public:
+	
+	T twiceValue = 0;
+	
+	constexpr Half() {}
+	constexpr Half(T whole) : twiceValue(whole * 2) {}
+	
+	constexpr Half &operator+=(const Half &rhs) {
+		twiceValue += rhs.twiceValue;
+		return *this;
+	}
+
+	constexpr Half &operator-=(const Half &rhs) {
+		twiceValue -= rhs.twiceValue;
+		return *this;
+	}
+
+	constexpr Half &operator*=(const T &rhs) {
+		twiceValue *= rhs;
+		return *this;
+	}
+
+	constexpr Half &operator/=(const T &rhs) {
+		twiceValue /= rhs;
+		return *this;
+	}
+	
+	friend constexpr Half operator+(Half lhs, const Half &rhs) {
+		return lhs += rhs;
+	}
+
+	friend constexpr Half operator-(Half lhs, const Half &rhs) {
+		return lhs -= rhs;
+	}
+	
+	friend constexpr Half operator-(Half rhs) {
+		return 0 - rhs;
+	}
+
+	friend constexpr Half operator*(Half lhs, const T &rhs) {
+		return lhs *= rhs;
+	}
+
+	friend constexpr Half operator*(const T &lhs, Half rhs) {
+		return rhs * lhs;
+	}
+	
+	friend constexpr bool operator==(const Half&, const Half&) = default;
+	friend constexpr auto operator<=>(const Half&, const Half&) = default;
+	
+	friend ostream &operator<<(ostream &output, const Half &value) {
+		return output << (value.twiceValue / 2.0);
+	}
+	
+	constexpr T round() const {
+		return twiceValue / 2;
+	}
+	
+	constexpr T roundDown() const {
+		return (twiceValue - (twiceValue & 1)) / 2;
+	}
+	
+	constexpr T roundUp() const {
+		return (twiceValue + (twiceValue & 1)) / 2;
+	}
+	
+	friend constexpr Half abs(Half value) {
+		if (value.twiceValue < 0) {
+			value.twiceValue = -value.twiceValue;
+		}
+		return value;
+	}
+};
+
+typedef Half<int> hint;
+
+consteval hint operator""_5(ull value) {
+	hint ret{(int) value};
+	ret.twiceValue++;
+	return ret;
+}
+
+constexpr hint div2(int value) {
+	hint ret;
+	ret.twiceValue = value;
+	return ret;
 }
 
 template <typename T> class vQueue {
