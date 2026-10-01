@@ -604,9 +604,9 @@ us getInputs(us info) {
 	return info & 15;
 }
 
-bool equalLength = true;
+constexpr bool equalLength = true;
 
-int inputCount = 5;
+constexpr int inputCount = 5;
 
 int curtime, mintime;
 
@@ -797,11 +797,15 @@ class MinTimeOptimizerBF: public MinTimeHollowBF {
 	}
 	
 	bool hasBeenTo(ull cState) {
-		if (!remember && curShortMap.count(cState)) {
-			return curShortMap[cState] <= incomingInfo;
+		// We're depending on the fact that updated info gets inserted in shortMap no matter what
+		// if there already was info there, as there's no memory downside, though there
+		// might be performance downside of accessing a larger map...
+		
+		if (shortMap.count(cState)) {
+			return shortMap[cState] <= incomingInfo;
 		}
 		
-		return shortMap.count(cState) && shortMap[cState] <= incomingInfo;
+		return !remember && curShortMap.count(cState) && curShortMap[cState] <= incomingInfo;
 	}
 	
 	void printSolution(ull cState) {
@@ -823,8 +827,8 @@ class MinTimeOptimizerBF: public MinTimeHollowBF {
 	}
 	
 	void insertWeak(ull cState, ull prevCState) {
-		if (remember) {
-			insert(cState, prevCState);
+		if (remember || shortMap.count(cState)) {
+			shortMap[cState] = incomingInfo;
 		} else {
 			curShortMap[cState] = incomingInfo;
 		}
@@ -909,6 +913,7 @@ class SpectralBF: public MinTimeOptimizerBF {
 		
 		us destInfo;
 		
+		// This one used to be broken, now it isn't! (I hope)
 		if (shortMap.count(cState)) {
 			destInfo = shortMap[cState];
 		} else if (!remember && curShortMap.count(cState)) {

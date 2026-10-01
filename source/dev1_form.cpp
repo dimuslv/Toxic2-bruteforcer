@@ -1,24 +1,24 @@
 #include "dev1_basics.cpp"
 
-const int collision_data[] = {dud};
-const int totalSize = (arraySize(collision_data) / 2) * 2;
-const int level_width = collision_data[totalSize];
-const int level_height = totalSize / 32 / level_width;
-const int leftSideType = 0;
+constexpr int collision_data[] = {dud};
+constexpr int totalSize = (arraySize(collision_data) / 2) * 2;
+constexpr int level_width = collision_data[totalSize];
+constexpr int level_height = totalSize / 32 / level_width;
+constexpr int leftSideType = 0;
 
-const bool advancedMinInput = true;
-const bool valueDescent = true;
-const int maxValue = USHRT_MAX;
+constexpr bool advancedMinInput = true;
+constexpr bool valueDescent = true;
+constexpr int maxValue = USHRT_MAX;
 
-const bool activeWrite = true;
+constexpr bool activeWrite = true;
 const string filename = "result.txt";
 
-const int deviationFromPerfection = -1;
-const bool terminateOnWin = true;
+constexpr int deviationFromPerfection = -1;
+constexpr bool terminateOnWin = true;
 
-const int customSize = 1;
+constexpr int customSize = 1;
 
-const int rememberPeriod = 1;
+constexpr int rememberPeriod = 1;
 
 #include "dev1_collision.cpp"
 #include "dev1_simulator.cpp"
@@ -34,6 +34,9 @@ bool hasWon(playerState &p) {
 }
 
 void doSpecial(playerState &p) {
+	/*if (damageData[p.dir][p._x][p._y] && !p.hit) {
+		startHit(p);
+	}*/
 	//int conveyors[] = {x, x2, y, +-6};
 	//doConveyors(p, conveyors, arraySize(conveyors));
 }
