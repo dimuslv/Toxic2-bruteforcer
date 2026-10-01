@@ -34,10 +34,10 @@ bool hasWon(playerState &p) {
 }
 
 void doSpecial(playerState &p) {
-	/*if (damageData[p.dir][p._x.twiceValue][p._y] && !p.hit) {
+	/*if (damageData[p.animDir][p._x.twiceValue][p._y] && !p.hit) {
 		startHit(p);
 	}*/
-	//int conveyors[] = {x, x2, y, +-3};
+	//constexpr int conveyors[] = {x, x2, y, LEFT};
 	//doConveyors(p, conveyors, arraySize(conveyors));
 }
 
