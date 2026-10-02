@@ -20,7 +20,7 @@ string stateInfoLine(playerState t) {
 	result << "vy: " << t.vy << ", ";
 	result << "state: " << t.state << ", ";
 	result << "dir: " << t.dir << ", ";
-	result << "wc: " << t.wall_count << endl;
+	result << "wc: " << t.wall_count << '\n';
 	return result.str();
 }
 
@@ -391,9 +391,7 @@ void printSolution(ull p2ci, int e) {
 		tci = compressState(uncompressRelative(states[tci] / e, temp)) * e + states[tci] % e;
 	}
 	
-	string line = solutionLine(ans, temp, endP);
-	
-	print(line);
+	print << solutionLine(ans, temp, endP);
 	
 	if (broken) {
 		string rec = "";
@@ -401,14 +399,14 @@ void printSolution(ull p2ci, int e) {
 			playerState temp3 = uncompressState(t3ci / e);
 			stringstream info;
 			info << stateInfoLine(temp3);
-			info << t3ci << endl;
+			info << t3ci << '\n';
 			rec = info.str() + rec;
 			
 			if (states[t3ci] == 0) break;
 			
 			t3ci = compressState(uncompressRelative(states[t3ci] / e, temp3)) * e + states[t3ci] % e;
 		}
-		print(rec);
+		print << rec;
 	}
 }
 
@@ -516,12 +514,7 @@ void bruteforceMinInputTime() {
 	auto startTime = chrono::steady_clock::now();
 	
 	while (!border.empty()) {
-		info << "Border size: " << border.size() << ", FPs: " << curFPs << endl;
-		print();
-		
-		if (activeWrite) {
-			writeToFile(getOutput());
-		}
+		print << "Border size: " << border.size() << ", FPs: " << curFPs << '\n';
 		
 		for (int i = 0; true; i++) {
 			if (i < ends.size()) {
@@ -576,11 +569,8 @@ void bruteforceMinInputTime() {
 	
 	auto endTime = chrono::steady_clock::now();
 	
-	info << "Elapsed: " << (chrono::duration_cast<chrono::seconds>(endTime - startTime)).count() << " seconds\n";
-	info << "State map size: " << states.size() << endl;
-	print();
-	
-	writeToFile(getOutput());
+	print << "Elapsed: " << (chrono::duration_cast<chrono::seconds>(endTime - startTime)).count() << " seconds\n";
+	print << "State map size: " << states.size() << '\n';
 	
 	states.clear();
 }
@@ -593,7 +583,7 @@ void printHollowSolution(const playerState &startP, const playerState &endP, vec
 		ans << letters[inputs.at(i)];
 	}
 	
-	print(solutionLine(ans.str(), startP, endP));
+	print << solutionLine(ans.str(), startP, endP);
 }
 
 us getFPs(us info) {
@@ -977,12 +967,7 @@ template <class C> void bruteforce() {
 	auto startTime = chrono::steady_clock::now();
 	
 	while (border.size > 0) {
-		info << "Border size: " << border.size << ", time: " << curtime << endl;
-		print();
-		
-		if (activeWrite) {
-			writeToFile(getOutput());
-		}
+		print << "Border size: " << border.size << ", time: " << curtime << '\n';
 		
 		bf.prepareNewBorderPass();
 		
@@ -1035,11 +1020,8 @@ template <class C> void bruteforce() {
 	
 	auto endTime = chrono::steady_clock::now();
 	
-	info << "Elapsed: " << (chrono::duration_cast<chrono::seconds>(endTime - startTime)).count() << " seconds\n";
-	info << "State container size: " << bf.getContainerSize() << endl;
-	print();
-	
-	writeToFile(getOutput());
+	print << "Elapsed: " << (chrono::duration_cast<chrono::seconds>(endTime - startTime)).count() << " seconds\n";
+	print << "State container size: " << bf.getContainerSize() << '\n';
 	
 	bf.clearContainer();
 }

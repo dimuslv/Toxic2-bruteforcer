@@ -1,3 +1,5 @@
+ofstream file("result.txt");
+
 #include "dev1_basics.cpp"
 
 constexpr int collision_data[] = {dud};
@@ -9,9 +11,6 @@ constexpr int leftSideType = 0;
 constexpr bool advancedMinInput = true;
 constexpr bool valueDescent = true;
 constexpr int maxValue = USHRT_MAX;
-
-constexpr bool activeWrite = true;
-const string filename = "result.txt";
 
 constexpr int deviationFromPerfection = -1;
 constexpr bool terminateOnWin = true;
@@ -43,7 +42,7 @@ void doSpecial(playerState &p) {
 
 string solutionLine(string inputs, const playerState &startP, const playerState &endP) {
 	stringstream answer;
-	answer << inputs << " " << endP._x << endl;
+	answer << inputs << " " << endP._x << '\n';
 	return answer.str();
 }
 

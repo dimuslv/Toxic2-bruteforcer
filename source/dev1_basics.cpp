@@ -8,23 +8,12 @@ typedef unsigned char uc;
 
 #define arraySize(arr) (sizeof(arr) / sizeof(*(arr)))
 
-stringstream output;
-stringstream info;
+class Printer {} print;
 
-void print() {
-	cout << info.str();
-	output << info.str();
-	info.str("");
-	info.clear();
-}
-
-void print(string s) {
-	cout << s;
-	output << s;
-}
-
-string getOutput() {
-	return output.str();
+template <typename T> const Printer &operator<<(const Printer &p, const T &value) {
+	cout << value;
+	file << value;
+	return p;
 }
 
 template <typename T> class Half {
