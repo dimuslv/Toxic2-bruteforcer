@@ -24,12 +24,6 @@ string stateInfoLine(playerState t) {
 	return result.str();
 }
 
-void writeToFile(string s) {
-	ofstream file(filename);
-	file << s;
-	file.close();
-}
-
 ull compressState(const playerState &t) {
 	ull a = 0;
 	a += (t._y - 40);

@@ -8,6 +8,8 @@ typedef unsigned char uc;
 
 #define arraySize(arr) (sizeof(arr) / sizeof(*(arr)))
 
+ofstream file;
+
 class Printer {} print;
 
 template <typename T> const Printer &operator<<(const Printer &p, const T &value) {

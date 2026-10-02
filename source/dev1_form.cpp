@@ -1,5 +1,3 @@
-ofstream file("result.txt");
-
 #include "dev1_basics.cpp"
 
 constexpr int collision_data[] = {dud};
@@ -11,6 +9,8 @@ constexpr int leftSideType = 0;
 constexpr bool advancedMinInput = true;
 constexpr bool valueDescent = true;
 constexpr int maxValue = USHRT_MAX;
+
+const string filename = "result.txt";
 
 constexpr int deviationFromPerfection = -1;
 constexpr bool terminateOnWin = true;
@@ -59,6 +59,7 @@ void getStartStates(vector<playerState> &startStates) {
 }
 
 int main() {
+	file.open(filename);
 	initializeData();
 	
 	//bruteforce<MinTimeBF>();
