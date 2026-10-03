@@ -269,13 +269,13 @@ playerState uncompressRelative(ull c, const playerState &p2) {
 	return uncompressState(c);
 }
 
-bool hasLostCustom(playerState &p);
+bool hasLostCustom(const playerState &p);
 
-bool hasLost(playerState &p) {
+bool hasLost(const playerState &p) {
 	return (p._x < 12 || p._x >= level_width * 32 - 12 || p._y > level_height * 32 - 64 || p._y < 46 || hasLostCustom(p));
 }
 
-bool hasWon(playerState &p);
+bool hasWon(const playerState &p);
 
 playerState updateWith(playerState p, int inp) {
 	switch (inp) {
