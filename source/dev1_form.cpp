@@ -24,11 +24,11 @@ constexpr int rememberPeriod = 1;
 #include "dev1_extra.cpp"
 #include "dev1_bruteforcer.cpp"
 
-bool hasLostCustom(playerState &p) {
+bool hasLostCustom(const playerState &p) {
 	return false;
 }
 
-bool hasWon(playerState &p) {
+bool hasWon(const playerState &p) {
 	return dud;
 }
 

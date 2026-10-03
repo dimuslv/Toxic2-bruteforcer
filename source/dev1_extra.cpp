@@ -43,7 +43,7 @@ void doConveyors(playerState &p, const int *conveyors, int len) {
 		p._y >= (conveyors[i+2] << 5) - 33 &&
 		p._y < (conveyors[i+2] << 5) + 66) {
 			hint temp = p.vx;
-			p._x += checkWalls(p, conveyors[i+3] == LEFT? -3 : 3, p.state == DUCK);
+			p._x += p.checkWalls(conveyors[i+3] == LEFT? -3 : 3, p.state == DUCK);
 			p.vx = temp;
 			return;
 		}
