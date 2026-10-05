@@ -225,7 +225,7 @@ playerState uncompressState(ull c) {
 		p.anim = p.state;
 	}
 	
-	p.dir = c % 2;
+	p.dir = static_cast<Dir>(c % 2);
 	p.animDir = p.dir;
 	c /= 2;
 	

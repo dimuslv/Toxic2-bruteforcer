@@ -19,7 +19,7 @@ constexpr int spikeData[][2][4*32*3*2]= {
 
 bool damageData[2][level_width*64][level_height*32];
 
-void paintSpike(int x, int y, int dir) {
+void paintSpike(int x, int y, Dir dir) {
 	int baseX = (x-1) * 64;
 	int baseY = (y-1) * 32;
 	for (int cx = (x-1) * 64; cx < (x+2) * 64; cx++) {

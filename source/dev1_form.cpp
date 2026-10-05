@@ -34,10 +34,10 @@ bool hasWon(const playerState &p) {
 
 void doSpecial(playerState &p) {
 	/*if (damageData[p.animDir][p._x.twiceValue][p._y] && !p.hit) {
-		startHit(p);
+		p.startHit();
 	}*/
-	//constexpr int conveyors[] = {x, x2, y, LEFT};
-	//doConveyors(p, conveyors, arraySize(conveyors));
+	/*constexpr int conveyors[] = {x, x2, y, LEFT};
+	doConveyors(p, conveyors, arraySize(conveyors));*/
 }
 
 string solutionLine(string inputs, const playerState &startP, const playerState &endP) {

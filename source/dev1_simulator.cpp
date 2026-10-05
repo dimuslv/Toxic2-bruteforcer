@@ -1,18 +1,23 @@
-const int LEFT = 0;
-const int RIGHT = 1;
-const int UP = 2;
-const int DOWN = 3;
+enum Dir {
+	NONE = -1,
+	LEFT = 0,
+	RIGHT = 1,
+	UP = 2,
+	DOWN = 3
+};
 
-const int START = 0;
-const int STAND = 1;
-const int DUCK = 2;
-const int WALK = 3;
-const int JUMP = 4;
-const int FALL = 5;
-const int WALL = 6;
-const int HIT = 7;
-const int DIE = 8;
-const int END = 9;
+enum State {
+	START,
+	STAND,
+	DUCK,
+	WALK,
+	JUMP,
+	FALL,
+	WALL,
+	HIT,
+	DIE,
+	END
+};
 
 bool getOnGround(hint x, int y) {
 	return collision(x,y) && !collision(x,y-1);
@@ -35,10 +40,10 @@ struct playerState {
 	int _y;
 	hint vx = 0;
 	int vy = 0;
-	int anim = STAND;
-	int animDir;
-	int state = STAND;
-	int dir;
+	State anim = STAND;
+	Dir animDir;
+	State state = STAND;
+	Dir dir;
 	hint lx;
 	hint rx;
 	int wall_count = 0;
@@ -52,7 +57,7 @@ struct playerState {
 	//bool can_jump = true;
 	bool DOWN_PRESSED = false;
 	bool UP_PRESSED = false;
-	int DIR_PRESSED = -1;
+	Dir DIR_PRESSED = NONE;
 	
 	int custom = 0;
 	
@@ -567,7 +572,7 @@ struct playerState {
 			startJump();
 			return;
 		}
-		if (DIR_PRESSED != -1) {
+		if (DIR_PRESSED != NONE) {
 			if (left_edge) {
 				if (getOnGround(rx, _y)) {
 					state = WALK;
