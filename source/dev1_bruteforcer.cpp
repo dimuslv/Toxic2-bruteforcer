@@ -1017,5 +1017,7 @@ template <class C> void bruteforce() {
 	print << "Elapsed: " << (duration_cast<std::chrono::seconds>(endTime - startTime)).count() << " seconds\n";
 	print << "State container size: " << bf.getContainerSize() << '\n';
 	
+	file.flush();
+	
 	bf.clearContainer();
 }
