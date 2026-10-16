@@ -1,113 +1,115 @@
-short dataUp[level_width * 32 + 64][level_height * 32 + 64];
-short dataDown[level_width * 32 + 64][level_height * 32 + 64];
-short dataLeft[level_width * 32 + 64][level_height * 32 + 64];
-short dataRight[level_width * 32 + 64][level_height * 32 + 64];
-const short MAX = 32767;
-const short MIN = -32768;
+enum Dir {
+	NONE = -1,
+	LEFT = 0,
+	RIGHT = 1,
+	UP = 2,
+	DOWN = 3
+};
 
-bool collision(hint x, int y) {
-	if (x < 0 || y < 0 || x >= level_width * 32 || y >= level_height * 32) {
+constexpr int CPAD = 32;
+short data[4][level_width + 2*CPAD][level_height + 2*CPAD];
+
+constexpr bool getPixel(const int *pool, int x, int y, int cols = level_width / 32) {
+	return pool[y * cols + x / 32] & (1 << (x % 32));
+}
+
+void setPixel(int *pool, int x, int y, int cols = level_width / 32) {
+	pool[y * cols + x / 32] |= 1 << (x % 32);
+}
+
+void resetPixel(int *pool, int x, int y, int cols = level_width / 32) {
+	pool[y * cols + x / 32] &= ~(1 << (x % 32));
+}
+
+bool getCollision(int x, int y) {
+	if (x < 0 || y < 0 || x >= level_width || y >= level_height) {
 		return false;
 	}
-	int xr = x.round();
 	
-	return collision_data[y * level_width + xr / 32] & (1 << (xr % 32));
+	return getPixel(collision, x, y);
+}
+
+bool getCollision(hint x, int y) {
+	return getCollision(x.truncate(), y);
 }
 
 void initializeData() {
-	for (int y = -32; y < level_height * 32 + 32; y++) {
-		short v = MIN;
-		for (int x = -32; x < level_width * 32 + 32; x++) {
-			if (x >= 0 && x < level_width * 32 && collision(x, y)) {
-				if (v > 0) {
-					v++;
-				} else {
-					v = 1;
-				}
-			} else {
-				if (v > 0) {
-					v = -1;
-				} else if (v > MIN) {
-					v--;
-				}
-			}
-			dataLeft[x+32][y+32] = v;
-		}
-	}
+	constexpr int bounds[]{-CPAD, level_width - 1 + CPAD,
+		-CPAD, level_height - 1 + CPAD};
 	
-	for (int y = -32; y < level_height * 32 + 32; y++) {
-		short v = MIN;
-		for (int x = level_width * 32 - 1 + 32; x >= -32; x--) {
-			if (x >= 0 && x < level_width * 32 && collision(x, y)) {
-				if (v > 0) {
-					v++;
+	for (int i = 0; i < 4; i++) {
+		int sign = 1 - (i % 2) * 2;
+		int majorStart = bounds[i];
+		int majorEnd = bounds[i + sign] + sign;
+		int minorStart = bounds[3 - i];
+		int minorEnd = bounds[3 - i - sign] - sign;
+		
+		for (int minor = minorStart; minor != minorEnd; minor -= sign) {
+			short v = SHRT_MIN;
+			for (int major = majorStart; major != majorEnd; major += sign) {
+				int x = i < 2? major : minor;
+				int y = i < 2? minor : major;
+				
+				if (getCollision(x, y)) {
+					if (v > 0) {
+						v++;
+					} else {
+						v = 1;
+					}
 				} else {
-					v = 1;
+					if (v > 0) {
+						v = -1;
+					} else if (v > SHRT_MIN) {
+						v--;
+					}
 				}
-			} else {
-				if (v > 0) {
-					v = -1;
-				} else if (v > MIN) {
-					v--;
-				}
+				
+				data[i][x+CPAD][y+CPAD] = v;
 			}
-			dataRight[x+32][y+32] = v;
 		}
 	}
+}
+
+void checkBounds(int x, int y) {
+	return;
 	
-	for (int x = -32; x < level_width * 32 + 32; x++) {
-		short v = MIN;
-		for (int y = -32; y < level_height * 32 + 32; y++) {
-			if (y >= 0 && y < level_height * 32 && collision(x, y)) {
-				if (v > 0) {
-					v++;
-				} else {
-					v = 1;
-				}
-			} else {
-				if (v > 0) {
-					v = -1;
-				} else if (v > MIN) {
-					v--;
-				}
-			}
-			dataUp[x+32][y+32] = v;
-		}
-	}
-	
-	for (int x = -32; x < level_width * 32 + 32; x++) {
-		short v = MIN;
-		for (int y = level_height * 32 - 1 + 32; y >= -32; y--) {
-			if (y >= 0 && y < level_height * 32 && collision(x, y)) {
-				if (v > 0) {
-					v++;
-				} else {
-					v = 1;
-				}
-			} else {
-				if (v > 0) {
-					v = -1;
-				} else if (v > MIN) {
-					v--;
-				}
-			}
-			dataDown[x+32][y+32] = v;
-		}
+	if (x < -CPAD || y < -CPAD || x >= level_width + CPAD || y >= level_height + CPAD) {
+		print << "ERROR: checked at " << x << ", " << y << '\n';
 	}
 }
 
-int dLeft(hint x, int y) {
-	return dataLeft[x.roundDown()+32][y+32];
+inline int dLeft(int x, int y) {
+	checkBounds(x, y);
+	return data[LEFT][x+CPAD][y+CPAD];
 }
 
-int dRight(hint x, int y) {
-	return dataRight[x.roundDown()+32][y+32];
+inline int dLeft(hint x, int y) {
+	return dLeft(x.truncate(), y);
 }
 
-int dUp(hint x, int y) {
-	return dataUp[x.roundDown()+32][y+32];
+inline int dRight(int x, int y) {
+	checkBounds(x, y);
+	return data[RIGHT][x+CPAD][y+CPAD];
 }
 
-int dDown(hint x, int y) {
-	return dataDown[x.roundDown()+32][y+32];
+inline int dRight(hint x, int y) {
+	return dRight(x.truncate(), y);
+}
+
+inline int dUp(int x, int y) {
+	checkBounds(x, y);
+	return data[UP][x+CPAD][y+CPAD];
+}
+
+inline int dUp(hint x, int y) {
+	return dUp(x.truncate(), y);
+}
+
+inline int dDown(int x, int y) {
+	checkBounds(x, y);
+	return data[DOWN][x+CPAD][y+CPAD];
+}
+
+inline int dDown(hint x, int y) {
+	return dDown(x.truncate(), y);
 }

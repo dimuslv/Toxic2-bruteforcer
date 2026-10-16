@@ -5,6 +5,8 @@
 #include <map>
 #include <set>
 #include <chrono>
+#include <cmath>
+#include <array>
 using std::cout;
 using std::ostream;
 using std::ofstream;
@@ -15,6 +17,8 @@ using std::max;
 using std::map;
 using std::set;
 using std::stringstream;
+using std::array;
+using std::initializer_list;
 
 typedef unsigned long long ull;
 typedef unsigned long uint;
@@ -88,16 +92,16 @@ template <typename T> class Half {
 		return output << (value.twiceValue / 2.0);
 	}
 	
-	constexpr T round() const {
+	constexpr T truncate() const {
 		return twiceValue / 2;
 	}
 	
-	constexpr T roundDown() const {
-		return (twiceValue - (twiceValue & 1)) / 2;
+	constexpr T round() const {
+		return (twiceValue + (twiceValue & 1)) / 2;
 	}
 	
-	constexpr T roundUp() const {
-		return (twiceValue + (twiceValue & 1)) / 2;
+	constexpr double toDouble() const {
+		return twiceValue / 2.0;
 	}
 	
 	friend constexpr Half abs(Half value) {
@@ -121,6 +125,21 @@ constexpr hint div2(int value) {
 	ret.twiceValue = value;
 	return ret;
 }
+
+template <int w, int h> struct bitmap : public array<array<bool,h>,w> {
+	static constexpr int width = w;
+	static constexpr int height = h;
+	static constexpr int lastX = w - 1;
+	static constexpr int lastY = h - 1;
+	
+	bool check(int x, int y) const {
+		if (x < 0 || x >= width || y < 0 || y >= height) {
+			return false;
+		}
+		
+		return array<array<bool,h>,w>::operator[](x)[y];
+	}
+};
 
 template <typename T> class vQueue {
 	T *arr;

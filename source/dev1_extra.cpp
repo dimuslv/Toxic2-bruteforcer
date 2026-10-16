@@ -1,4 +1,4 @@
-constexpr int spikeData[][2][4*32*3*2]= {
+constexpr int spikeData[4][2][4*32*3*2]{
 	{
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-32768,1023,0,0,0,0,-32768,32767,0,0,0,0,-128,-4194305,7,0,0,0,-128,-1,1023,0,0,0,-128,-1,32767,0,0,0,-128,-1,4194303,0,0,0,-128,-1,134217727,0,0,0,-128,-1,2147483647,0,0,0,-128,-1,2147483647,0,0,0,-128,-1,2147483647,0,0,0,-128,-1,-1,7,0,0,-128,-1,-1,127,0,0,-128,-1,-1,1023,0,0,-128,-1,-1,1023,0,0,-128,-1,-1,1023,0,0,-128,-1,-1,127,0,0,-128,-1,-1,127,0,0,-128,-1,-1,127,0,0,-128,-1,-1,1023,0,0,-128,-1,-1,1023,0,0,-128,-1,-1,1023,0,0,-128,-1,-1,1023,0,0,-128,-1,-1,1023,0,0,-128,-1,-1,1023,0,0,-128,-1,-1,127,0,0,-64,-1,-1,63,0,0,-8,-1,-1,7,0,0,-4,-1,-1,127,0,-2147483648,-1,-1,-1,1023,0,-67108864,-1,-1,-1,1023,0,-8388608,-1,-1,-1,1023,0,-4194304,-1,-1,-1,2047,0,-4194304,-1,-1,-1,2047,0,-4194304,-1,-1,-1,16383,0,-4194304,-1,-1,-1,32767,0,-4194304,-1,-1,-1,524287,0,-4194304,-1,-1,-1,4194303,0,-4194304,-1,-1,-1,8388607,0,-4194304,-1,-1,-1,8388607,0,-4194304,-1,-1,-1,8388607,0,-4194304,-1,-1,-1,8388607,0,-4194304,-1,-1,-1,8388607,0,-4194304,-1,-1,-1,4194303,0,-4194304,-1,-1,-1,524287,0,-4194304,-1,-1,-1,262143,0,-4194304,-1,-1,-1,16383,0,-8388608,-1,-1,-1,1023,0,-4194304,-1,-1,-1,2047,0,-4194304,-1,-1,-1,2047,0,-4194304,-1,-1,-1,16383,0,-4194304,-1,-1,-1,32767,0,-4194304,-1,-1,-1,4194303,0,-4194304,-1,-1,-1,67108863,0,-4194304,-1,-1,-1,67108863,0,-4194304,-1,-1,-1,8388607,0,-4194304,-1,-1,-1,8388607,0,-4194304,-1,-1,-1,8388607,0,-4194304,-1,-1,-1,8388607,0,-4194304,-1,-1,-1,4194303,0,-4194304,-1,-1,-1,524287,0,-4194304,-1,-1,-1,262143,0,-4194304,-1,-1,-1,16383,0,-8388608,-1,-1,-1,127,0,-67108864,-1,-1,-1,127,0,-134217728,-1,-1,-1,127,0,0,-8,-1,-1,1023,0,0,-8,-1,-1,32767,0,0,-8,-1,-1,4194303,0,0,-8,-1,-1,67108863,0,0,-8,-1,-1,67108863,0,0,-8,-1,-1,4194303,0,0,-8,-1,-1,32767,0,0,-8,-1,-1,1023,0,0,-8,-1,-1,7,0,0,-8,-1,1073741823,0,0,0,-1073741824,1073741823,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1073741816,0,0,0,0,0,-4,7,0,0,0,524160,-4,1023,0,0,0,67108736,-4,32767,0,0,0,2147483520,-4,4194303,0,0,0,-128,-1,67108863,0,0,0,-4,-1,134217727,0,0,-2147483648,-1,-1,2147483647,0,0,-2147483648,-1,-1,2147483647,0,0,-2147483648,-1,-1,2147483647,0,0,-2147483648,-1,-1,2147483647,0,0,-2147483648,-1,-1,2147483647,0,0,-2147483648,-1,-1,2147483647,0,0,-2147483648,-1,-1,2147483647,0,0,-2147483648,-1,-1,2147483647,0,0,-2147483648,-1,-1,2147483647,0,0,-2147483648,-1,-1,2147483647,0,0,-2147483648,-1,-1,2147483647,0,0,-2147483648,-1,-1,2147483647,0,0,-2147483648,-1,-1,2147483647,0,0,-2147483648,-1,-1,2147483647,0,0,-2147483648,-1,-1,2147483647,0,0,-2147483648,-1,-1,2147483647,0,0,-2147483648,-1,-1,2147483647,0,0,-2147483648,-1,-1,2147483647,0,0,-2147483648,-1,-1,2147483647,0,0,-1073741824,-1,-1,2147483647,0,0,-1073741824,-1,-1,2147483647,0,0,-134217728,-1,-1,2147483647,0,0,-67108864,-1,-1,-1,3,0,-4194304,-1,-1,-1,7,0,-524288,-1,-1,-1,63,0,-262144,-1,-1,-1,127,0,-262144,-1,-1,-1,2047,0,-262144,-1,-1,-1,32767,0,-262144,-1,-1,-1,262143,0,-262144,-1,-1,-1,524287,0,-262144,-1,-1,-1,524287,0,-262144,-1,-1,-1,524287,0,-262144,-1,-1,-1,524287,0,-262144,-1,-1,-1,524287,0,-262144,-1,-1,-1,262143,0,-262144,-1,-1,-1,32767,0,-262144,-1,-1,-1,16383,0,-262144,-1,-1,-1,1023,0,-262144,-1,-1,-1,7,0,-262144,-1,-1,-1,7,0,-2048,-1,-1,-1,63,0,-2048,-1,-1,-1,127,0,-2048,-1,-1,-1,2047,0,-2048,-1,-1,-1,32767,0,-2048,-1,-1,-1,262143,0,-2048,-1,-1,-1,524287,0,-2048,-1,-1,-1,524287,0,-2048,-1,-1,-1,524287,0,-2048,-1,-1,-1,524287,0,-2048,-1,-1,-1,524287,0,-2048,-1,-1,-1,262143,0,-2048,-1,-1,-1,32767,0,-262144,-1,-1,-1,16383,0,-262144,-1,-1,-1,1023,0,-262144,-1,-1,-1,7,0,-262144,-1,-1,2147483647,0,0,-2048,-1,-1,2147483647,0,0,-2048,-1,-1,134217727,0,0,-2048,-1,-1,8388607,0,0,-2048,-1,-1,8388607,0,0,-2048,-1,-1,1073741823,0,0,-2048,-1,-1,-1,3,0,-2048,-1,-1,-1,3,0,-2048,-1,-1,1073741823,0,0,-2048,-1,-1,8388607,0,0,-2048,-1,-1,262143,0,0,-2048,-1,-1,2047,0,0,-2048,-1,-1,63,0,0,0,-32768,32767,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -17,35 +17,291 @@ constexpr int spikeData[][2][4*32*3*2]= {
 	}
 };
 
-bool damageData[2][level_width*64][level_height*32];
+bool damageData[2][level_width*2][level_height];
 
 void paintSpike(int x, int y, Dir dir) {
-	int baseX = (x-1) * 64;
-	int baseY = (y-1) * 32;
-	for (int cx = (x-1) * 64; cx < (x+2) * 64; cx++) {
-		for (int cy = (y-1) * 32; cy < (y+3) * 32; cy++) {
-			int chunkNum = (cy - baseY) * 6 + (cx - baseX) / 32;
-			int bitMask = 1 << ((cx - baseX) % 32);
-			damageData[LEFT][cx][cy] |= spikeData[dir][LEFT][chunkNum] & bitMask;
-			damageData[RIGHT][cx][cy] |= spikeData[dir][RIGHT][chunkNum] & bitMask;
+	const int baseX = (x-1) * 64;
+	const int baseY = (y-1) * 32;
+	const int endX = min(baseX + 3*64, level_width*2);
+	const int endY = min(baseY + 4*32, level_height);
+	
+	for (int i = max(baseX, 0); i < endX; i++) {
+		for (int j = max(baseY, 0); j < endY; j++) {
+			for (int d = 0; d < 2; d++) {
+				if (getPixel(spikeData[dir][d], i-baseX, j-baseY, 6)) {
+					damageData[d][i][j] = true;
+				}
+			}
 		}
 	}
 }
 
-void doConveyors(playerState &p, const int *conveyors, int len) {
+bool checkDamage(const playerState &p) {
+	return damageData[p.animDir][p._x.twiceValue][p._y];
+}
+
+void doConveyors(playerState &p, const initializer_list<int> &conveyors) {
 	if (p.state != STAND && p.state != WALK && p.state != DUCK) {
 		return;
 	}
 	
-	for (int i = 0; i < len; i += 4) {
-		if (p._x > (conveyors[i] << 5) - 16 &&
-		p._x < (conveyors[i+1] << 5) + 16 &&
-		p._y >= (conveyors[i+2] << 5) - 33 &&
-		p._y < (conveyors[i+2] << 5) + 66) {
+	const int *data = conveyors.begin();
+	
+	for (int i = 0; i < conveyors.size(); i += 4) {
+		if (p._x > (data[i] * 32) - 16 &&
+		p._x < (data[i+1] * 32) + 16 &&
+		p._y >= (data[i+2] * 32) - 33 &&
+		p._y < (data[i+2] * 32) + 66) {
 			hint temp = p.vx;
-			p._x += p.checkWalls(conveyors[i+3] == LEFT? -3 : 3, p.state == DUCK);
+			p._x += p.checkWalls(data[i+3] * 6 - 3, p.state == DUCK);
 			p.vx = temp;
 			return;
 		}
 	}
 }
+
+consteval auto getBombHole() {
+	bitmap<72,72> b{};
+	
+	constexpr int empty[]{30,26,23,21,19,17,15,14,13,12,11,10,9,8,7,6,6,5,5,4,4,3,3,2,2,2,1,1,1,1,0,0,0,0,0,0};
+	
+	for (int i = 0; i < 36; i++) {
+		for (int j = empty[i]; j < 36; j++) {
+			b[j][i] = true;
+			b[b.lastX-j][i] = true;
+			b[j][b.lastY-i] = true;
+			b[b.lastX-j][b.lastY-i] = true;
+		}
+	}
+	
+	return b;
+}
+
+consteval auto getBombShape() {
+	bitmap<17,17> b{};
+	
+	for (auto arr : b) {
+		arr.fill(true);
+	}
+	
+	constexpr int empty[]{0,1,5,11,15};
+	
+	for (int i : empty) {
+		b[i][0] = false;
+		b[b.lastX][i] = false;
+		b[b.lastX-i][b.lastY] = false;
+		b[0][b.lastY-i] = false;
+	}
+	
+	return b;
+}
+
+enum BombType {
+	BASIC,
+	PLATFORM,
+	DIGGER,
+	WALKER
+};
+
+struct bomb {
+	double _x = 0;
+	double _y = 0;
+	double vx;
+	double vy;
+	bool landed;
+	double boundary[4]{-8, 8, -8, 8};
+	static constexpr double INERTIA = 0.92;
+	static constexpr double GRAVITY = 1;
+	static constexpr auto bomb_hole = getBombHole();
+	static constexpr auto bomb_shape = getBombShape();
+	
+	BombType type = BASIC;
+	
+	bomb(const playerState &p) {
+		switch (p.anim) {
+			case STAND:
+				_x = 18;
+				_y = -15;
+				break;
+			case DUCK:
+				_x = 0;
+				_y = -8;
+				break;
+			case WALK:
+				_x = 15;
+				_y = -18;
+				break;
+			case JUMP:
+			case FALL:
+				_x = 20;
+				_y = -29;
+				break;
+		}
+		
+		if (_y) {
+			_x = (p.animDir == RIGHT? _x : -_x) + p._x.toDouble();
+			_y += p._y;
+		}
+		
+		vx = p.dir == RIGHT? 1 : -1;
+		
+		switch (p.state) {
+			case STAND:
+				vx *= 3;
+				vy = -3;
+				break;
+			case DUCK:
+				vx = 0;
+				vy = 0;
+				break;
+			case WALK:
+				vx = vx * 3 + p.vx.toDouble();
+				vy = -3;
+				break;
+			case JUMP:
+			case FALL:
+				vx = vx * 3 + p.vx.toDouble();
+				vy = -3 + p.vy;
+				break;
+		}
+		
+		manageOverlap();
+		
+		adjustToFloor();
+	}
+	
+	void manageOverlap() {
+		const int baseX = _x - bomb_shape.width/2.0;
+		const int baseY = _y - bomb_shape.height/2.0;
+		const int endX = min(baseX + bomb_shape.width, level_width);
+		const int endY = min(baseY + bomb_shape.height, level_height);
+		
+		for (int i = max(baseX, 0); i < endX; i++) {
+			for (int j = max(baseY, 0); j < endY; j++) {
+				if (bomb_shape[i-baseX][j-baseY] && getCollision(i, j)) {
+					vx = 0;
+					if (i == baseX) {
+						_x += bomb_shape.width;
+					} else {
+						_x -= bomb_shape.width;
+					}
+					return;
+				}
+			}
+		}
+	}
+	
+	void main() {
+		if (vx != 0 || vy != 0) {
+			landed = false;
+			
+			_x += checkVertWalls();
+			_x = trunc(_x * 20) / 20.0;
+			_y += checkHorizWalls();
+			_y = trunc(_y * 20) / 20.0;
+			
+			vx *= INERTIA;
+			vy *= INERTIA;
+			vy += GRAVITY;
+			
+			if (abs(vy) < 0.5 && landed) {
+				vy = 0;
+				adjustToFloor();
+			}
+			if (abs(vx) < 0.01) {
+				vx = 0;
+			}
+		}
+	}
+	
+	double checkVertWalls() {
+		if (vx > 0) {
+			int boundX = _x + boundary[RIGHT];
+			
+			for (int i = 0; i < vx; i++) {
+				for (int j = -8; j <= 6; j += 2) {
+					if (getCollision(boundX + i, _y + j)) {
+						vx *= -1;
+						return i;
+					}
+				}
+			}
+		} else if (vx < 0) {
+			int boundX = _x + boundary[LEFT];
+			
+			for (int i = 0; i < -vx; i++) {
+				for (int j = -8; j <= 6; j += 2) {
+					if (getCollision(boundX - i, _y + j)) {
+						vx *= -1;
+						return -i;
+					}
+				}
+			}
+		}
+		
+		return vx;
+	}
+	
+	double checkHorizWalls() {
+		if (vy > 0) {
+			int boundY = _y + boundary[DOWN];
+			
+			for (int i = 0; i < vy; i++) {
+				for (int j = -6; j <= 8; j += 2) {
+					if (getCollision(_x + j, boundY + i)) {
+						vy *= -1;
+						landed = true;
+						return i;
+					}
+				}
+			}
+		} else if (vy < 0) {
+			int boundY = _y + boundary[UP];
+			
+			for (int i = 0; i < -vy; i++) {
+				for (int j = -8; j <= 6; j += 2) {
+					if (getCollision(_x + j, boundY - i)) {
+						vy *= -1;
+						landed = true;
+						return -i;
+					}
+				}
+			}
+		}
+		
+		return vy;
+	}
+	
+	void adjustToFloor() {
+		if (!getInGround(_x, _y + boundary[DOWN])) {
+			for (int i = 1; i <= 8; i++) {
+				if (getOnGround(_x, _y + boundary[DOWN] + i)) {
+					_y += i - 1;
+					break;
+				}
+			}
+		}
+	}
+	
+	void explode(int *collision, const int *solid) {
+		// Making sure the truncation is correct considering that the real hole dimension is 80
+		const int baseX = static_cast<int>(_x - 40) + 4;
+		const int baseY = static_cast<int>(_y - 50) + 4;
+		const int endX = min(baseX + bomb_hole.width, level_width);
+		const int endY = min(baseY + bomb_hole.height, level_height);
+		
+		for (int i = max(baseX, 0); i < endX; i++) {
+			for (int j = max(baseY, 0); j < endY; j++) {
+				if (bomb_hole[i-baseX][j-baseY] && !getPixel(solid, i, j)) {
+					resetPixel(collision, i, j);
+				}
+			}
+		}
+	}
+	
+	void fullMovement() {
+		for (int i = 0; i < 99 && !(vx == 0 && vy == 0); i++) {
+			main();
+		}
+	}
+};

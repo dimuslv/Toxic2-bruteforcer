@@ -1,9 +1,9 @@
 #include "dev1_basics.cpp"
 
-constexpr int collision_data[] = {dud};
-constexpr int totalSize = (arraySize(collision_data) / 2) * 2;
-constexpr int level_width = collision_data[totalSize];
-constexpr int level_height = totalSize / 32 / level_width;
+constexpr int collision[]{dud};
+constexpr int totalSize = (arraySize(collision) / 2) * 2;
+constexpr int level_width = collision[totalSize] * 32;
+constexpr int level_height = totalSize * 32 / level_width;
 constexpr int leftSideType = 0;
 
 constexpr bool advancedMinInput = true;
@@ -33,11 +33,11 @@ bool hasWon(const playerState &p) {
 }
 
 void doSpecial(playerState &p) {
-	/*if (damageData[p.animDir][p._x.twiceValue][p._y] && !p.hit) {
+	/*if (checkDamage(p) && !p.hit) {
 		p.startHit();
 	}*/
-	/*constexpr int conveyors[] = {x, x2, y, LEFT};
-	doConveyors(p, conveyors, arraySize(conveyors));*/
+	
+	//doConveyors(p, {x, x2, y, LEFT});
 }
 
 string solutionLine(string inputs, const playerState &startP, const playerState &endP) {

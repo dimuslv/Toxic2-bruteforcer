@@ -1,11 +1,3 @@
-enum Dir {
-	NONE = -1,
-	LEFT = 0,
-	RIGHT = 1,
-	UP = 2,
-	DOWN = 3
-};
-
 enum State {
 	START,
 	STAND,
@@ -20,19 +12,19 @@ enum State {
 };
 
 bool getOnGround(hint x, int y) {
-	return collision(x,y) && !collision(x,y-1);
+	return getCollision(x,y) && !getCollision(x,y-1);
 }
 
 bool getInGround(hint x, int y) {
-	return collision(x,y) && collision(x,y-1);
+	return getCollision(x,y) && getCollision(x,y-1);
 }
 
 bool getInAir(hint x, int y) {
-	return !collision(x,y) && !collision(x,y-1);
+	return !getCollision(x,y) && !getCollision(x,y-1);
 }
 
 bool getInWall(hint x, int y) {
-	return collision(x,y);
+	return getCollision(x,y);
 }
 
 struct playerState {
@@ -66,9 +58,9 @@ struct playerState {
 	
 	bool getOnWall(hint x, int y) {
 		if (dir == LEFT) {
-			return collision(x,y) && !collision(x+1,y);
+			return getCollision(x,y) && !getCollision(x+1,y);
 		} else {
-			return collision(x,y) && !collision(x-1,y);
+			return getCollision(x,y) && !getCollision(x-1,y);
 		}
 	}
 	
@@ -549,7 +541,7 @@ struct playerState {
 		vy = 0;
 		
 		if (vx != 0) {
-			vx = vx.roundUp();
+			vx = vx.round();
 			if (vx > 0) {
 				vx -= 2;
 				if (vx <= 0) {
@@ -614,7 +606,7 @@ struct playerState {
 
 	void doDuck() {
 		if (vx != 0) {
-			vx = vx.roundUp();
+			vx = vx.round();
 			if (vx > 0) {
 				vx -= 2;
 				if (vx <= 0) {

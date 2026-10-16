@@ -28,7 +28,7 @@ ull compressState(const playerState &p) {
 	ull a = 0;
 	a += (p._y - 40);
 	
-	a *= level_width * 64;
+	a *= level_width * 2;
 	a += p._x.twiceValue;
 	
 	a *= customSize;
@@ -44,7 +44,7 @@ ull compressState(const playerState &p) {
 	
 	if (p.state == STAND || p.state == DUCK) {
 		b *= 22;
-		int vx = p.vx.roundUp();
+		int vx = p.vx.round();
 		if (vx < -2) {
 			b += vx + 12;
 		} else if (vx < 3) {
@@ -80,7 +80,7 @@ ull compressState(const playerState &p) {
 			int d = dUp(p.right_edge? p.lx : p.rx, p._y);
 			if (d > 1 && d <= 101) {
 				b += 2;
-				b += (p._x - p.oldX).round() + 19;
+				b += (p._x - p.oldX).truncate() + 19;
 			} else {
 				b++;
 			}
@@ -235,9 +235,9 @@ playerState uncompressState(ull c) {
 	p.custom = c % customSize;
 	c /= customSize;
 	
-	p._x = div2(c % (level_width * 64));
+	p._x = div2(c % (level_width * 2));
 	p.rx += p._x;
-	c /= level_width * 64;
+	c /= level_width * 2;
 	
 	p._y = c + 40;
 	
@@ -272,12 +272,12 @@ playerState uncompressRelative(ull c, const playerState &p2) {
 bool hasLostCustom(const playerState &p);
 
 bool hasLost(const playerState &p) {
-	return (p._x < 12 || p._x >= level_width * 32 - 12 || p._y > level_height * 32 - 64 || p._y < 46 || hasLostCustom(p));
+	return (p._x < 12 || p._x >= level_width - 12 || p._y > level_height - 64 || p._y < 46 || hasLostCustom(p));
 }
 
 bool hasWon(const playerState &p);
 
-playerState updateWith(playerState p, int inp) {
+void updateWith(playerState &p, int inp) {
 	switch (inp) {
 		case 0:
 			break;
@@ -296,12 +296,11 @@ playerState updateWith(playerState p, int inp) {
 	}
 	
 	p.update();
-	return p;
 }
 
 playerState updateAndCheckFate(playerState p, int inp, bool &lost, bool &won) {
 	//if (p.state != DUCK) {
-		p = updateWith(p, inp);
+		updateWith(p, inp);
 		
 		lost = hasLost(p);
 		if (!lost) won = hasWon(p);
@@ -316,7 +315,7 @@ playerState updateAndCheckFate(playerState p, int inp, bool &lost, bool &won) {
 		if (inp == 0) {
 			p.state = STAND;
 		} else if (inp == 4) {
-			p = updateWith(p, 4);
+			updateWith(p, 4);
 		} else {
 			lost = true;
 		}
