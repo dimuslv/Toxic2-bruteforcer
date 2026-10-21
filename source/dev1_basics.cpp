@@ -1,24 +1,33 @@
 #include <iostream>
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <map>
-#include <set>
-#include <chrono>
-#include <cmath>
-#include <array>
 using std::cout;
 using std::ostream;
+#include <fstream>
 using std::ofstream;
+#include <sstream>
+using std::stringstream;
+#include <vector>
 using std::vector;
+#include <map>
+using std::map;
+#include <set>
+using std::set;
+#include <chrono>
+#include <array>
+using std::array;
+#include <atomic>
+using std::atomic_flag;
+#include <thread>
+using std::jthread;
+using std::stop_token;
+
+#include <cmath>
+#include <cstring>
+
 using std::string;
+using std::to_string;
+using std::initializer_list;
 using std::min;
 using std::max;
-using std::map;
-using std::set;
-using std::stringstream;
-using std::array;
-using std::initializer_list;
 
 typedef unsigned long long ull;
 typedef unsigned long uint;
@@ -27,11 +36,21 @@ typedef unsigned char uc;
 
 #define arraySize(arr) (sizeof(arr) / sizeof(*(arr)))
 
+template <typename T> void setIfGreater(T &var, const T &val) {
+	if (val > var) {
+		var = val;
+	}
+}
+
+constexpr uint divUp(const uint &a, const uint &b) {
+	return (a + b - 1) / b;
+}
+
 ofstream file;
 
 class Printer {} print;
 
-template <typename T> const Printer &operator<<(const Printer &p, const T &value) {
+const Printer &operator<<(const Printer &p, const auto &value) {
 	cout << value;
 	file << value;
 	return p;

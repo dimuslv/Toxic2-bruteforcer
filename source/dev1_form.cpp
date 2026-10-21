@@ -22,6 +22,7 @@ constexpr int rememberPeriod = 1;
 #include "dev1_collision.cpp"
 #include "dev1_simulator.cpp"
 #include "dev1_extra.cpp"
+#include "dev1_visualization.cpp"
 #include "dev1_bruteforcer.cpp"
 
 bool hasLostCustom(const playerState &p) {
@@ -61,6 +62,7 @@ void getStartStates(vector<playerState> &startStates) {
 int main() {
 	file.open(filename);
 	initializeData();
+	jthread windowThread{windowUpdate};
 	
 	//bruteforce<MinTimeBF>();
 	bruteforce<MinTimeHollowBF>();

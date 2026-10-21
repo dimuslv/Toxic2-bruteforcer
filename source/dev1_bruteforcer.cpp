@@ -579,6 +579,14 @@ void printHollowSolution(const playerState &startP, const playerState &endP, vec
 	print << solutionLine(ans.str(), startP, endP);
 }
 
+#ifndef DO_VISUALIZATION
+	void savedVisit(const playerState &p) {}
+	void borderVisit(const playerState &p) {}
+	void winVisit(const playerState &p) {}
+	void updateVisualization() {}
+	void windowUpdate() {}
+#endif
+
 us getFPs(us info) {
 	return info >> 4;
 }
@@ -609,6 +617,7 @@ class MinTimeBF {
 	}
 	
 	void insert(ull cState, ull prevCState) {
+		savedVisit(uncompressState(cState));
 		//states[cState] = compressRelative(uncompressState(prevCState), uncompressState(cState));
 		states[cState] = prevCState;
 	}
@@ -695,12 +704,13 @@ class MinTimeHollowBF {
 	}
 	
 	void insert(ull cState, ull prevCState) {
+		savedVisit(uncompressState(cState));
 		been.insert(cState);
 	}
 	
 	void insertWeak(ull cState, ull prevCState) {
 		if (remember) {
-			been.insert(cState);
+			insert(cState, prevCState);
 		} else {
 			curBeen.insert(cState);
 		}
@@ -806,12 +816,13 @@ class MinTimeOptimizerBF: public MinTimeHollowBF {
 	}
 	
 	void insert(ull cState, ull prevCState) {
+		savedVisit(uncompressState(cState));
 		shortMap[cState] = incomingInfo;
 	}
 	
 	void insertWeak(ull cState, ull prevCState) {
 		if (remember || shortMap.count(cState)) {
-			shortMap[cState] = incomingInfo;
+			insert(cState, prevCState);
 		} else {
 			curShortMap[cState] = incomingInfo;
 		}
@@ -950,17 +961,21 @@ template <class C> void bruteforce() {
 	vQueue<ull> border;
 	
 	for (int i = 0; i < startStates.size(); i++) {
+		borderVisit(startStates[i]);
+		savedVisit(startStates[i]);
 		border.push(compressState(startStates[i]));
 		bf.addStartState(compressState(startStates[i]));
 	}
 	
-	curtime = 0;
-	mintime = -1;
-	
 	auto startTime = std::chrono::steady_clock::now();
 	
-	while (border.size > 0) {
+	for (curtime = 0, mintime = -1; border.size > 0 &&
+		(deviationFromPerfection == -1 || mintime == -1 || curtime <= mintime + deviationFromPerfection);
+		curtime++) {
+		
+		updateVisualization();
 		print << "Border size: " << border.size << ", time: " << curtime << '\n';
+		//file.flush();
 		
 		bf.prepareNewBorderPass();
 		
@@ -988,6 +1003,7 @@ template <class C> void bruteforce() {
 				if (bf.hasBeenTo(p2c)) continue;
 				
 				if (won) {
+					winVisit(p2);
 					bf.insert(p2c, compressState(p));
 					if (mintime == -1) {
 						mintime = curtime;
@@ -998,20 +1014,17 @@ template <class C> void bruteforce() {
 				}
 				
 				if (!won || !terminateOnWin) {
+					borderVisit(p2);
 					border.push(p2c);
 					bf.manageBorderPush();
 				}
 			}
 		}
-		
-		curtime++;
-		
-		if (deviationFromPerfection != -1 && mintime != -1 && curtime > mintime + deviationFromPerfection) {
-			break;
-		}
 	}
 	
 	auto endTime = std::chrono::steady_clock::now();
+	
+	updateVisualization();
 	
 	print << "Elapsed: " << (duration_cast<std::chrono::seconds>(endTime - startTime)).count() << " seconds\n";
 	print << "State container size: " << bf.getContainerSize() << '\n';

@@ -1,2 +1,2 @@
-"C:\Users\dimus\Downloads\w64devkit\bin\g++.exe" -o "dev1_form" "dev1_form.cpp" -march=native -Ofast -std=gnu++23 -s
+"C:\Users\dimus\Downloads\w64devkit\bin\g++.exe" -o "dev1_form" "dev1_form.cpp" -march=native -Ofast -std=gnu++23 -s -I"C:\Users\dimus\Desktop\desktop\Flash games\toxic 2\Toxic 2\cppbruteforcer\bruteforcer hub\Toxic2-bruteforcer\raylib-6.0_win64_mingw-w64\include" -L"C:\Users\dimus\Desktop\desktop\Flash games\toxic 2\Toxic 2\cppbruteforcer\bruteforcer hub\Toxic2-bruteforcer\raylib-6.0_win64_mingw-w64\lib" -lraylib -lgdi32 -lwinmm
 pause
