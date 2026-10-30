@@ -4,13 +4,13 @@ set<ull> curBeen;
 map<ull, us> shortMap;
 map<ull, us> curShortMap;
 
-const uint OFS_STAND= 0;
-const uint OFS_DUCK = OFS_STAND+ 22 *  1 * 3;
-const uint OFS_WALK = OFS_DUCK + 22 * 42 * 3;
-const uint OFS_JUMP = OFS_WALK + 51 *  2 * 3;
-const uint OFS_FALL = OFS_JUMP + 51 * 28 * 3;
-const uint OFS_WALL = OFS_FALL + 51 * 12 * 5;
-const uint OFS_END  = OFS_WALL + 99 *  1 * 5;//10983
+constexpr uint OFS_STAND= 0;
+constexpr uint OFS_DUCK = OFS_STAND+ 22 *  1 * 3;
+constexpr uint OFS_WALK = OFS_DUCK + 22 * 42 * 3;
+constexpr uint OFS_JUMP = OFS_WALK + 51 *  2 * 3;
+constexpr uint OFS_FALL = OFS_JUMP + 51 * 28 * 3;
+constexpr uint OFS_WALL = OFS_FALL + 51 * 12 * (animAccuracy? 3*13 : 5);
+constexpr uint OFS_END  = OFS_WALL + 99 *  1 * 5;//10983
 
 string stateInfoLine(const playerState &p) {
 	stringstream result;
@@ -99,11 +99,36 @@ ull compressState(const playerState &p) {
 		b *= 5;
 		b += p.fall_count;
 	} else if (p.state == FALL) {
-		b *= 5;
-		if (p.anim == WALL && p.fall_anim_count < 2) {
-			b += (3 + p.fall_anim_count);
+		if (!animAccuracy) {
+			b *= 5;
+			if (p.anim == WALL && p.fall_anim_count < 2) {
+				b += (3 + p.fall_anim_count);
+			} else {
+				b += p.wall_count;
+			}
 		} else {
+			b *= 3;
 			b += p.wall_count;
+			
+			b *= 13;
+			if (p.anim != FALL && p.fall_anim_count < 2) {
+				b += p.fall_anim_count;
+				b += p.animDir * 2;
+				
+				switch (p.anim) {
+					case STAND:
+						b += 0;
+						break;
+					case WALK:
+						b += 4;
+						break;
+					case WALL:
+						b += 8;
+						break;
+				}
+			} else {
+				b += 12;
+			}
 		}
 	} else {
 		b *= 3;
@@ -168,17 +193,36 @@ playerState uncompressState(ull c) {
 		}
 	}
 	
+	p.anim = p.state;
+	p.animDir = NONE;
+	
 	if (p.state == WALL) {
 		p.fall_count = temp % 5;
 		temp /= 5;
 	} else if (p.state == FALL) {
-		if (temp % 5 < 3) {
-			p.wall_count = temp % 5;
+		if (!animAccuracy) {
+			if (temp % 5 < 3) {
+				p.wall_count = temp % 5;
+			} else {
+				p.fall_anim_count = temp % 5 - 3;
+				p.anim = WALL;
+			}
+			temp /= 5;
 		} else {
-			p.fall_anim_count = temp % 5 - 3;
-			p.anim = WALL;
+			if (temp % 13 == 12) {
+				p.anim = FALL;
+			} else {
+				p.fall_anim_count = temp % 13 % 2;
+				p.animDir = static_cast<Dir>(temp % 13 / 2 % 2);
+				State ts[]{STAND, WALK, WALL};
+				
+				p.anim = ts[(temp % 13) / 4];
+			}
+			temp /= 13;
+			
+			p.wall_count = temp % 3;
+			temp /= 3;
 		}
-		temp /= 5;
 	} else {
 		p.wall_count = temp % 3;
 		temp /= 3;
@@ -221,12 +265,10 @@ playerState uncompressState(ull c) {
 		temp /= 99;
 	}
 	
-	if (p.anim != WALL) {
-		p.anim = p.state;
-	}
-	
 	p.dir = static_cast<Dir>(c % 2);
-	p.animDir = p.dir;
+	if (p.animDir == NONE) {
+		p.animDir = p.dir;
+	}
 	c /= 2;
 	
 	p.hit = c % 2;

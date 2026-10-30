@@ -1,3 +1,5 @@
 Problem: when saving a standing state for example, vx gets compressed, which is bad if I then after uncompressing wanna go to jump state from a hit
 
 Value Descent: misses strats where you go through win state to descend further... but probably fine.
+
+Winning is checked even if the state would be blocked anyway...

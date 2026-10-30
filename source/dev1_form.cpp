@@ -19,6 +19,8 @@ constexpr int customSize = 1;
 
 constexpr int rememberPeriod = 1;
 
+constexpr bool animAccuracy = false;
+
 #include "dev1_collision.cpp"
 #include "dev1_simulator.cpp"
 #include "dev1_extra.cpp"

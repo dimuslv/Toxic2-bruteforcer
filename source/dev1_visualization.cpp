@@ -33,7 +33,7 @@ void updateVisualization() {
 	threadRead.test_and_set();
 	
 	savedMax[curBuffer] = savedMax[!curBuffer];
-	borderMax[curBuffer] = borderMax[!curBuffer];
+	borderMax[curBuffer] = 1;
 	winMax[curBuffer] = winMax[!curBuffer];
 	
 	memcpy(savedVisits[curBuffer], savedVisits[!curBuffer], sizeof savedVisits[curBuffer]);
