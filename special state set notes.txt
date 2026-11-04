@@ -1,0 +1,10 @@
+Bitset states:
+
+normal floor: (66+66+153) *2
+non-upwarp floor: (66+153) *2
+28*jump: 153 *2
+12*fall: 153 *2
+wall: 5 *2
+special duck: 40*66 *2
+special fall: [2*51*12 *2] 2*8
+special wall: 49*5 *2

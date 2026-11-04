@@ -4,13 +4,38 @@ set<ull> curBeen;
 map<ull, us> shortMap;
 map<ull, us> curShortMap;
 
+constexpr uint STAND_COUNT = 22 * 3;
+
+constexpr uint DUCK_NORMAL_COUNT = 22 * 3;
+constexpr uint DUCK_NOUPWARP_COUNT = 22 * 3;
+constexpr uint DUCK_SPECIAL_COUNT = 22 * 40 * 3;
+constexpr uint DUCK_COUNT = DUCK_NORMAL_COUNT + DUCK_NOUPWARP_COUNT + DUCK_SPECIAL_COUNT;
+
+constexpr uint WALK_NORMAL_COUNT = 51 * 3;
+constexpr uint WALK_NOUPWARP_COUNT = 51 * 3;
+constexpr uint WALK_COUNT = WALK_NORMAL_COUNT + WALK_NOUPWARP_COUNT;
+
+constexpr uint JUMP_ONEVY_COUNT = 51 * 3;
+constexpr uint JUMP_COUNT = 28 * JUMP_ONEVY_COUNT;
+
+constexpr uint FALL_NORMAL_ONEVY_COUNT = 51 * 3;
+constexpr uint FALL_FIRSTTWO_VYS = animAccuracy? 8 : 2;
+constexpr uint FALL_NORMAL_COUNT = (FALL_FIRSTTWO_VYS + 10) * FALL_NORMAL_ONEVY_COUNT;
+constexpr uint FALL_SPECIAL_COUNT = 4 * 2;
+constexpr uint FALL_COUNT = FALL_NORMAL_COUNT + FALL_SPECIAL_COUNT;
+
+constexpr uint WALL_NORMAL_COUNT = 5;
+constexpr uint WALL_SPECIAL_COUNT = 49 * 5;
+constexpr uint WALL_COUNT = WALL_NORMAL_COUNT + WALL_SPECIAL_COUNT;
+
+
 constexpr uint OFS_STAND= 0;
-constexpr uint OFS_DUCK = OFS_STAND+ 22 *  1 * 3;
-constexpr uint OFS_WALK = OFS_DUCK + 22 * 42 * 3;
-constexpr uint OFS_JUMP = OFS_WALK + 51 *  2 * 3;
-constexpr uint OFS_FALL = OFS_JUMP + 51 * 28 * 3;
-constexpr uint OFS_WALL = OFS_FALL + 51 * 12 * (animAccuracy? 3*13 : 5);
-constexpr uint OFS_END  = OFS_WALL + 99 *  1 * 5;//10983
+constexpr uint OFS_DUCK = OFS_STAND+STAND_COUNT;
+constexpr uint OFS_WALK = OFS_DUCK + DUCK_COUNT;
+constexpr uint OFS_JUMP = OFS_WALK + WALK_COUNT;
+constexpr uint OFS_FALL = OFS_JUMP + JUMP_COUNT;
+constexpr uint OFS_WALL = OFS_FALL + FALL_COUNT;
+constexpr uint OFS_END  = OFS_WALL + WALL_COUNT;//9522 / 10440
 
 string stateInfoLine(const playerState &p) {
 	stringstream result;
@@ -40,96 +65,98 @@ ull compressState(const playerState &p) {
 	a *= 2;
 	a += p.dir;
 	
+	bool wallFall = p.anim == WALL && p.state == FALL && p.vy < 2;
 	uint b = 0;
 	
-	if (p.state == STAND || p.state == DUCK) {
-		b *= 22;
-		int vx = p.vx.round();
-		if (vx < -2) {
-			b += vx + 12;
-		} else if (vx < 3) {
-			b += 10;
-		} else {
-			b += vx + 8;
+	switch (p.state) {
+		case STAND:
+		case DUCK: {
+			b *= 22;
+			int vx = p.vx.round();
+			if (vx < -2) {
+				b += vx + 12;
+			} else if (vx < 3) {
+				b += 10;
+			} else {
+				b += vx + 8;
+			}
+			break;
 		}
-	} else if (p.state == WALK || p.state == JUMP || p.state == FALL) {
-		b *= 51;
-		b += (p.vx + 12_5).twiceValue;
-	} else if (p.state == WALL) {
-		b *= 99;
-		if (p.left_edge) {
-			b += (p.rx - p._x + 24_5).twiceValue;
-		} else if (p.right_edge) {
-			b += (p.lx - p._x + 24_5).twiceValue;
-		} else {
-			b += 24_5 .twiceValue;
-		}
+		case FALL:
+			if (wallFall) {
+				b *= 4;
+				b += min(abs(p.vx.twiceValue), 3);
+				break;
+			}
+		case WALK:
+		case JUMP:
+			b *= 51;
+			b += (p.vx + 12_5).twiceValue;
+			break;
+		case WALL:
+			b *= 50;
+			b += 25 - p._x.round();
+			if (p.left_edge) {
+				b += p.rx.truncate();
+			} else if (p.right_edge) {
+				b += p.lx.truncate();
+			} else {
+				b += p._x.truncate();
+			}
+			break;
 	}
 	
-	if (p.state == JUMP) {
-		b *= 28;
-		b += min(p.vy + 16, 27);
-	} else if (p.state == FALL) {
-		b *= 12;
-		b += min(p.vy, 11);
-	} else if (p.state == DUCK) {
-		b *= 42;
-		if (p.vy < 0) {
-			b++;
-		} else if (p.right_edge || p.left_edge) {
-			int d = dUp(p.right_edge? p.lx : p.rx, p._y);
-			if (d > 1 && d <= 101) {
-				b += 2;
-				b += (p._x - p.oldX).truncate() + 19;
-			} else {
+	switch (p.state) {
+		case DUCK:
+			b *= 42;
+			if (p.vy < 0) {
 				b++;
+			} else if (p.right_edge || p.left_edge) {
+				int d = dUp(p.right_edge? p.lx : p.rx, p._y);
+				if (d > 1 && d <= 101) {
+					b += 2;
+					b += (p._x - p.oldX).truncate() + 19;
+				} else {
+					b++;
+				}
 			}
-		}
-		
-		/*b *= 2;
-		if (p.right_edge || p.left_edge || p.vy < 0) {
-			b++;
-		}*/
-	} else if (p.state == WALK) {
-		b *= 2;
-		if (p.vy < 0) b++;
+			
+			/*b *= 2;
+			if (p.right_edge || p.left_edge || p.vy < 0) {
+				b++;
+			}*/
+			break;
+		case WALK:
+			b *= 2;
+			b += p.vy < 0;
+			break;
+		case JUMP:
+			b *= 28;
+			b += min(p.vy, 11) + 16;
+			break;
+		case FALL:
+			if (wallFall) {
+				b *= 2;
+			} else {
+				b *= FALL_FIRSTTWO_VYS + 10;
+				
+				if (animAccuracy && p.vy < 2) {
+					b += 2 * p.animDir;
+					b += 4 * (p.anim == WALK);
+				} else {
+					b += FALL_FIRSTTWO_VYS - 2;
+				}
+			}
+			
+			b += min(p.vy, 11);
+			break;
 	}
 	
 	if (p.state == WALL) {
 		b *= 5;
 		b += p.fall_count;
-	} else if (p.state == FALL) {
-		if (!animAccuracy) {
-			b *= 5;
-			if (p.anim == WALL && p.fall_anim_count < 2) {
-				b += (3 + p.fall_anim_count);
-			} else {
-				b += p.wall_count;
-			}
-		} else {
-			b *= 3;
-			b += p.wall_count;
-			
-			b *= 13;
-			if (p.anim != FALL && p.fall_anim_count < 2) {
-				b += p.fall_anim_count;
-				b += p.animDir * 2;
-				
-				switch (p.anim) {
-					case STAND:
-						b += 0;
-						break;
-					case WALK:
-						b += 4;
-						break;
-					case WALL:
-						b += 8;
-						break;
-				}
-			} else {
-				b += 12;
-			}
-		}
+	} else if (wallFall) {
+		b += FALL_NORMAL_COUNT;
 	} else {
 		b *= 3;
 		b += p.wall_count;
@@ -164,10 +191,23 @@ ull compressState(const playerState &p) {
 
 playerState uncompressState(ull c) {
 	playerState p;
-	ull temp;
 	
-	temp = c % OFS_END;
+	uint temp = c % OFS_END;
 	c /= OFS_END;
+	
+	p.dir = p.animDir = static_cast<Dir>(c % 2);
+	c /= 2;
+	
+	p.hit = c % 2;
+	c /= 2;
+	
+	p.custom = c % customSize;
+	c /= customSize;
+	
+	p._x = div2(c % (level_width * 2));
+	c /= level_width * 2;
+	
+	p._y = c + 40;
 	
 	if (temp >= OFS_JUMP) {
 		if (temp >= OFS_WALL) {
@@ -194,101 +234,94 @@ playerState uncompressState(ull c) {
 	}
 	
 	p.anim = p.state;
-	p.animDir = NONE;
 	
 	if (p.state == WALL) {
 		p.fall_count = temp % 5;
 		temp /= 5;
-	} else if (p.state == FALL) {
-		if (!animAccuracy) {
-			if (temp % 5 < 3) {
-				p.wall_count = temp % 5;
-			} else {
-				p.fall_anim_count = temp % 5 - 3;
-				p.anim = WALL;
-			}
-			temp /= 5;
-		} else {
-			if (temp % 13 == 12) {
-				p.anim = FALL;
-			} else {
-				p.fall_anim_count = temp % 13 % 2;
-				p.animDir = static_cast<Dir>(temp % 13 / 2 % 2);
-				State ts[]{STAND, WALK, WALL};
-				
-				p.anim = ts[(temp % 13) / 4];
-			}
-			temp /= 13;
-			
-			p.wall_count = temp % 3;
-			temp /= 3;
-		}
+	} else if (p.state == FALL && temp >= FALL_NORMAL_COUNT) {
+		temp -= FALL_NORMAL_COUNT;
+		p.anim = WALL;
 	} else {
 		p.wall_count = temp % 3;
 		temp /= 3;
 	}
 	
-	int oldXDisplacement = -100;
-	if (p.state == JUMP) {
-		p.vy = temp % 28 - 16;
-		temp /= 28;
-	} else if (p.state == FALL) {
-		p.vy = temp % 12;
-		temp /= 12;
-	} else if (p.state == DUCK) {
-		if (temp % 42 == 1) {
-			p.vy = -1;
-		} else if (temp % 42 > 1) {
-			oldXDisplacement = (temp % 42) - 2 - 19;
-		}
-		temp /= 42;
-	} else if (p.state == WALK) {
-		p.vy = -(temp % 2);
-		temp /= 2;
+	switch (p.state) {
+		case DUCK:
+			if (temp % 42 == 1) {
+				p.vy = -1;
+			} else if (temp % 42 > 1) {
+				int oldXDisplacement = (temp % 42) - 2 - 19;
+				p.anim = STAND;
+				p._x -= oldXDisplacement;
+				p.calculateDistance(false);
+				p._x += oldXDisplacement;
+				p.anim = DUCK;
+			}
+			temp /= 42;
+			break;
+		case WALK:
+			p.vy = -(temp % 2);
+			temp /= 2;
+			break;
+		case JUMP:
+			p.vy = temp % 28 - 16;
+			temp /= 28;
+			break;
+		case FALL:
+			if (p.anim == WALL) {
+				p.vy = p.fall_anim_count = temp % 2;
+				temp /= 2;
+			} else {
+				uint temp2 = temp % (FALL_FIRSTTWO_VYS + 10);
+				temp /= FALL_FIRSTTWO_VYS + 10;
+				
+				if (animAccuracy && temp2 < FALL_FIRSTTWO_VYS) {
+					p.vy = p.fall_anim_count = temp2 % 2;
+					temp2 /= 2;
+					p.animDir = static_cast<Dir>(temp2 % 2);
+					temp2 /= 2;
+					p.anim = temp2? WALK : STAND;
+				} else {
+					p.vy = temp2 - FALL_FIRSTTWO_VYS + 2;
+				}
+			}
+			break;
 	}
 	
-	if (p.state == STAND || p.state == DUCK) {
-		if (temp % 22 < 10) {
-			p.vx = temp % 22 - 12;
-		} else if (temp % 22 == 10) {
-			p.vx = 0;
-		} else {
-			p.vx = temp % 22 - 8;
-		}
-		temp /= 22;
-	} else if (p.state == WALK || p.state == JUMP || p.state == FALL) {
-		p.vx = div2(temp % 51) - 12_5;
-		temp /= 51;
-	} else if (p.state == WALL) {
-		p.left_edge = true;
-		p.rx = div2(temp % 99) - 24_5;
-		temp /= 99;
-	}
-	
-	p.dir = static_cast<Dir>(c % 2);
-	if (p.animDir == NONE) {
-		p.animDir = p.dir;
-	}
-	c /= 2;
-	
-	p.hit = c % 2;
-	c /= 2;
-	
-	p.custom = c % customSize;
-	c /= customSize;
-	
-	p._x = div2(c % (level_width * 2));
-	p.rx += p._x;
-	c /= level_width * 2;
-	
-	p._y = c + 40;
-	
-	if (p.state == DUCK && oldXDisplacement != -100) {
-		p.anim = STAND;
-		p._x -= oldXDisplacement;
-		p.calculateDistance(false);
-		p._x += oldXDisplacement;
-		p.anim = DUCK;
+	switch (p.state) {
+		case STAND:
+		case DUCK:
+			if (temp % 22 < 10) {
+				p.vx = temp % 22 - 12;
+			} else if (temp % 22 == 10) {
+				p.vx = 0;
+			} else {
+				p.vx = temp % 22 - 8;
+			}
+			temp /= 22;
+			break;
+		case FALL:
+			if (p.anim == WALL) {
+				p.vx = div2(temp % 4);
+				temp /= 4;
+				
+				if (p.vx == 1_5) p.vx = 2;
+				
+				p.vx *= -1 + 2*p.dir;
+				
+				break;
+			}
+		case WALK:
+		case JUMP:
+			p.vx = div2(temp % 51) - 12_5;
+			temp /= 51;
+			break;
+		case WALL:
+			p.left_edge = true;
+			p.rx = p._x.round() + temp % 50 - 25;
+			temp /= 50;
+			break;
 	}
 	
 	return p;
