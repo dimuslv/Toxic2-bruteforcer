@@ -1,26 +1,20 @@
-map<ull, ull> states;
-set<ull> been;
-set<ull> curBeen;
-map<ull, us> shortMap;
-map<ull, us> curShortMap;
-
 constexpr uint STAND_COUNT = 22 * 3;
 
 constexpr uint DUCK_NORMAL_COUNT = 22 * 3;
-constexpr uint DUCK_NOUPWARP_COUNT = 22 * 3;
 constexpr uint DUCK_SPECIAL_COUNT = 22 * 40 * 3;
-constexpr uint DUCK_COUNT = DUCK_NORMAL_COUNT + DUCK_NOUPWARP_COUNT + DUCK_SPECIAL_COUNT;
+constexpr uint DUCK_COUNT = 2*DUCK_NORMAL_COUNT + DUCK_SPECIAL_COUNT;
 
 constexpr uint WALK_NORMAL_COUNT = 51 * 3;
-constexpr uint WALK_NOUPWARP_COUNT = 51 * 3;
-constexpr uint WALK_COUNT = WALK_NORMAL_COUNT + WALK_NOUPWARP_COUNT;
+constexpr uint WALK_COUNT = 2*WALK_NORMAL_COUNT;
 
 constexpr uint JUMP_ONEVY_COUNT = 51 * 3;
-constexpr uint JUMP_COUNT = 28 * JUMP_ONEVY_COUNT;
+constexpr uint JUMP_VY_COUNT = 28;
+constexpr uint JUMP_COUNT = JUMP_VY_COUNT * JUMP_ONEVY_COUNT;
 
 constexpr uint FALL_NORMAL_ONEVY_COUNT = 51 * 3;
 constexpr uint FALL_FIRSTTWO_VYS = animAccuracy? 8 : 2;
-constexpr uint FALL_NORMAL_COUNT = (FALL_FIRSTTWO_VYS + 10) * FALL_NORMAL_ONEVY_COUNT;
+constexpr uint FALL_VY_COUNT = FALL_FIRSTTWO_VYS + 10;
+constexpr uint FALL_NORMAL_COUNT = FALL_VY_COUNT * FALL_NORMAL_ONEVY_COUNT;
 constexpr uint FALL_SPECIAL_COUNT = 4 * 2;
 constexpr uint FALL_COUNT = FALL_NORMAL_COUNT + FALL_SPECIAL_COUNT;
 
@@ -36,6 +30,255 @@ constexpr uint OFS_JUMP = OFS_WALK + WALK_COUNT;
 constexpr uint OFS_FALL = OFS_JUMP + JUMP_COUNT;
 constexpr uint OFS_WALL = OFS_FALL + FALL_COUNT;
 constexpr uint OFS_END  = OFS_WALL + WALL_COUNT;//9522 / 10440
+
+State extractState(uint &info) {
+	if (info >= OFS_JUMP) {
+		if (info >= OFS_WALL) {
+			info -= OFS_WALL;
+			return WALL;
+		} else if (info >= OFS_FALL) {
+			info -= OFS_FALL;
+			return FALL;
+		} else {
+			info -= OFS_JUMP;
+			return JUMP;
+		}
+	} else {
+		if (info >= OFS_WALK) {
+			info -= OFS_WALK;
+			return WALK;
+		} else if (info >= OFS_DUCK) {
+			info -= OFS_DUCK;
+			return DUCK;
+		} else {
+			info -= OFS_STAND;
+			return STAND;
+		}
+	}
+}
+
+template <int N> class bigBitsetMap {
+	using headType = uint;
+	
+	map<headType, uint> internalMap;
+	vector<bitset<N>> internalVector;
+	
+	public:
+	
+	bool insert(headType head, uint tail) {
+		if (internalMap.count(head)) {
+			internalVector[internalMap[head]].set(tail);
+			return true;
+		}
+		
+		internalVector.push_back({});
+		internalVector.back().set(tail);
+		return internalMap[head] = internalVector.size() - 1;
+	}
+	
+	bool count(headType head, uint tail) {
+		return internalMap.count(head)
+			&& internalVector[internalMap[head]][tail];
+	}
+	
+	void clear() {
+		internalMap.clear();
+		internalVector.clear();
+	}
+};
+
+class smallBitsetMap {
+	using headType = uint;
+	
+	map<headType, uint> internalMap;
+	
+	public:
+	
+	bool insert(headType head, uint tail) {
+		return internalMap[head] |= 1 << tail;
+	}
+	
+	bool count(headType head, uint tail) {
+		return internalMap.count(head) && internalMap[head] & (1 << tail);
+	}
+	
+	void clear() {
+		internalMap.clear();
+	}
+};
+
+template <int N> class bitsetMap:
+	public conditional<(N > 32), bigBitsetMap<N>, smallBitsetMap>::type {
+};
+
+class ToxicSet {
+	static constexpr uint FLOOR_NORMAL_COUNT = STAND_COUNT + DUCK_NORMAL_COUNT + WALK_NORMAL_COUNT;
+	static constexpr uint FLOOR_NOUPWARP_COUNT = DUCK_NORMAL_COUNT + WALK_NORMAL_COUNT;
+	static constexpr uint WALL_NORMAL_FALL_SPECIAL_COUNT = WALL_NORMAL_COUNT + FALL_SPECIAL_COUNT;
+	
+	bitsetMap<2*FLOOR_NORMAL_COUNT> floorNormal;
+	bitsetMap<2*FLOOR_NOUPWARP_COUNT> floorNoupwarp;
+	bitsetMap<2*JUMP_ONEVY_COUNT> jump[JUMP_VY_COUNT];
+	bitsetMap<2*FALL_NORMAL_ONEVY_COUNT> fallNormal[FALL_VY_COUNT];
+	bitsetMap<2*WALL_NORMAL_FALL_SPECIAL_COUNT> wallNormalFallSpecial;
+	set<ull> duckSpecial;
+	set<ull> wallSpecial;
+	
+	enum ContainerID {
+		FLOOR_NORMAL,
+		FLOOR_NOUPWARP,
+		JUMP,
+		FALL_NORMAL,
+		WALL_NORMAL_FALL_SPECIAL,
+		DUCK_SPECIAL,
+		WALL_SPECIAL
+	};
+	
+	ull sizeVal = 0;
+	
+	tuple<ContainerID, ull, uint, uc> getInfo (ull cState) {
+		ull head = cState / OFS_END / 2;
+		bool dir = cState / OFS_END % 2;
+		uint tail = cState % OFS_END;
+		ContainerID cid;
+		uc vy = 0;
+		
+		State st = extractState(tail);
+		
+		uint wc = tail % 3;
+		uint rTail = tail / 3;
+		
+		uint extra = 0;
+		
+		switch (st) {
+			case STAND:
+				cid = FLOOR_NORMAL;
+				break;
+			case DUCK:
+				if (rTail % 42 >= 2) {
+					cid = DUCK_SPECIAL;
+					head = head * DUCK_COUNT + tail;
+					break;
+				}
+				extra -= DUCK_NORMAL_COUNT;
+			case WALK:
+				extra += DUCK_NORMAL_COUNT;
+
+				if (rTail % 2 == 0) {
+					cid = FLOOR_NORMAL;
+					tail = rTail / 2 * 3 + wc;
+					tail += STAND_COUNT + extra;
+				} else {
+					cid = FLOOR_NOUPWARP;
+					tail = rTail / 2 * 3 + wc;
+					tail += extra;
+				}
+				break;
+			case State::JUMP:
+				cid = JUMP;
+				vy = rTail % JUMP_VY_COUNT;
+				tail = rTail / JUMP_VY_COUNT * 3 + wc;
+				break;
+			case FALL:
+				if (tail >= FALL_NORMAL_COUNT) {
+					cid = WALL_NORMAL_FALL_SPECIAL;
+					tail = tail - FALL_NORMAL_COUNT + WALL_NORMAL_COUNT;
+				} else {
+					cid = FALL_NORMAL;
+					vy = rTail % FALL_VY_COUNT;
+					tail = rTail / FALL_VY_COUNT * 3 + wc;
+				}
+				break;
+			case WALL:
+				if (tail / 5 % 50 + head / 2 / customSize % 2 == 25) {
+					cid = WALL_NORMAL_FALL_SPECIAL;
+					tail %= 5;
+				} else {
+					cid = WALL_SPECIAL;
+					head = head * WALL_COUNT + tail;
+				}
+				break;
+		}
+		
+		if (cid == DUCK_SPECIAL || cid == WALL_SPECIAL) {
+			head = head * 2 + dir;
+		} else {
+			tail = tail * 2 + dir;
+		}
+		
+		return {cid, head, tail, vy};
+	}
+	
+	public:
+	
+	bool count(ull cState) {
+		auto [cid, head, tail, vy] = getInfo(cState);
+		
+		switch (cid) {
+			case FLOOR_NORMAL:
+				return floorNormal.count(head, tail);
+			case FLOOR_NOUPWARP:
+				return floorNoupwarp.count(head, tail);
+			case JUMP:
+				return jump[vy].count(head, tail);
+			case FALL_NORMAL:
+				return fallNormal[vy].count(head, tail);
+			case WALL_NORMAL_FALL_SPECIAL:
+				return wallNormalFallSpecial.count(head, tail);
+			case DUCK_SPECIAL:
+				return duckSpecial.count(head);
+			case WALL_SPECIAL:
+				return wallSpecial.count(head);
+		}
+		
+		return false;
+	}
+	
+	bool insert(ull cState) {
+		sizeVal++;
+		
+		auto [cid, head, tail, vy] = getInfo(cState);
+		
+		switch (cid) {
+			case FLOOR_NORMAL:
+				return floorNormal.insert(head, tail);
+			case FLOOR_NOUPWARP:
+				return floorNoupwarp.insert(head, tail);
+			case JUMP:
+				return jump[vy].insert(head, tail);
+			case FALL_NORMAL:
+				return fallNormal[vy].insert(head, tail);
+			case WALL_NORMAL_FALL_SPECIAL:
+				return wallNormalFallSpecial.insert(head, tail);
+			case DUCK_SPECIAL:
+				return duckSpecial.insert(head).second;
+			case WALL_SPECIAL:
+				return wallSpecial.insert(head).second;
+		}
+		
+		return false;
+	}
+	
+	ull size() {
+		return sizeVal;
+	}
+	
+	void clear() {
+		floorNormal.clear();
+		floorNoupwarp.clear();
+		for (auto c : jump) c.clear();
+		for (auto c : fallNormal) c.clear();
+		wallNormalFallSpecial.clear();
+		duckSpecial.clear();
+		wallSpecial.clear();
+	}
+};
+
+map<ull, ull> states;
+conditional<useToxicSet, ToxicSet, set<ull>>::type been;
+set<ull> curBeen;
+map<ull, us> shortMap;
+map<ull, us> curShortMap;
 
 string stateInfoLine(const playerState &p) {
 	stringstream result;
@@ -209,31 +452,7 @@ playerState uncompressState(ull c) {
 	
 	p._y = c + 40;
 	
-	if (temp >= OFS_JUMP) {
-		if (temp >= OFS_WALL) {
-			p.state = WALL;
-			temp -= OFS_WALL;
-		} else if (temp >= OFS_FALL) {
-			p.state = FALL;
-			temp -= OFS_FALL;
-		} else {
-			p.state = JUMP;
-			temp -= OFS_JUMP;
-		}
-	} else {
-		if (temp >= OFS_WALK) {
-			p.state = WALK;
-			temp -= OFS_WALK;
-		} else if (temp >= OFS_DUCK) {
-			p.state = DUCK;
-			temp -= OFS_DUCK;
-		} else {
-			p.state = STAND;
-			temp -= OFS_STAND;
-		}
-	}
-	
-	p.anim = p.state;
+	p.state = p.anim = extractState(temp);
 	
 	if (p.state == WALL) {
 		p.fall_count = temp % 5;

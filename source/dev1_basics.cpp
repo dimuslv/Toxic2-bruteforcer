@@ -8,9 +8,7 @@ using std::stringstream;
 #include <vector>
 using std::vector;
 #include <map>
-using std::map;
 #include <set>
-using std::set;
 #include <chrono>
 #include <array>
 using std::array;
@@ -19,6 +17,12 @@ using std::atomic_flag;
 #include <thread>
 using std::jthread;
 using std::stop_token;
+#include <bitset>
+using std::bitset;
+#include <type_traits>
+using std::conditional;
+#include <tuple>
+using std::tuple;
 
 #include <cmath>
 #include <cstring>
@@ -125,9 +129,7 @@ template <typename T> class Half {
 	}
 	
 	friend constexpr Half abs(Half value) {
-		if (value.twiceValue < 0) {
-			value.twiceValue = -value.twiceValue;
-		}
+		value.twiceValue = abs(value.twiceValue);
 		return value;
 	}
 };
