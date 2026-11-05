@@ -39,6 +39,9 @@ typedef unsigned long uint;
 typedef unsigned short us;
 typedef unsigned char uc;
 
+template <class T> using set = std::set<T>;
+template <class T1, class T2> using map = std::map<T1, T2>;
+
 #define arraySize(arr) (sizeof(arr) / sizeof(*(arr)))
 
 template <typename T> void setIfGreater(T &var, const T &val) {
@@ -161,6 +164,60 @@ template <int w, int h> struct bitmap : public array<array<bool,h>,w> {
 		
 		return array<array<bool,h>,w>::operator[](x)[y];
 	}
+};
+
+template <class headType, int N> class bigBitsetMap {
+	map<headType, uint> internalMap;
+	vector<bitset<N>> internalVector;
+	
+	public:
+	
+	bool insert(headType head, uint tail) {
+		if (internalMap.count(head)) {
+			internalVector[internalMap[head]].set(tail);
+			return true;
+		}
+		
+		internalVector.push_back({});
+		internalVector.back().set(tail);
+		return internalMap[head] = internalVector.size() - 1;
+	}
+	
+	bool count(headType head, uint tail) {
+		return internalMap.count(head)
+			&& internalVector[internalMap[head]][tail];
+	}
+	
+	void clear() {
+		internalMap.clear();
+		internalVector.clear();
+	}
+};
+
+template <class headType> class smallBitsetMap {
+	map<headType, uint> internalMap;
+	
+	public:
+	
+	bool insert(headType head, uint tail) {
+		return internalMap[head] |= 1 << tail;
+	}
+	
+	bool count(headType head, uint tail) {
+		return internalMap.count(head) && internalMap[head] & (1 << tail);
+	}
+	
+	void clear() {
+		internalMap.clear();
+	}
+};
+
+template <class headType, int N> class bitsetMap:
+	public conditional<
+		(N > 32),
+		bigBitsetMap<headType, N>,
+		smallBitsetMap<headType>
+	>::type {
 };
 
 template <typename T> class vQueue {

@@ -23,13 +23,11 @@ constexpr bool animAccuracy = false;
 
 constexpr bool useToxicSet = true;
 
-template <class T> using set = std::set<T>;
-template <class T1, class T2> using map = std::map<T1, T2>;
-
 #include "dev1_collision.cpp"
 #include "dev1_simulator.cpp"
 #include "dev1_extra.cpp"
 #include "dev1_visualization.cpp"
+#include "dev1_storage.cpp"
 #include "dev1_bruteforcer.cpp"
 
 bool hasLostCustom(const playerState &p) {
