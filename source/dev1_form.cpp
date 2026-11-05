@@ -1,3 +1,4 @@
+#define USE_BOOST
 #include "dev1_basics.cpp"
 
 constexpr int collision[]{dud};

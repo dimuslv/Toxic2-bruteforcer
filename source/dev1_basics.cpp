@@ -39,8 +39,24 @@ typedef unsigned long uint;
 typedef unsigned short us;
 typedef unsigned char uc;
 
-template <class T> using set = std::set<T>;
-template <class T1, class T2> using map = std::map<T1, T2>;
+#ifdef USE_BOOST
+	#include "boost/unordered/unordered_flat_set.hpp"
+	#include "boost/unordered/unordered_flat_map.hpp"
+#endif
+
+template <class T> using set =
+#ifdef USE_BOOST
+	boost::unordered_flat_set<T>;
+#else
+	std::set<T>;
+#endif
+
+template <class T1, class T2> using map =
+#ifdef USE_BOOST
+	boost::unordered_flat_map<T1, T2>;
+#else
+	std::map<T1, T2>;
+#endif
 
 #define arraySize(arr) (sizeof(arr) / sizeof(*(arr)))
 

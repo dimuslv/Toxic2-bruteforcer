@@ -110,6 +110,8 @@ class ToxicSet {
 					cid = DUCK_SPECIAL;
 					head = head * DUCK_COUNT + tail;
 					break;
+				} else {
+					rTail = rTail / 42 * 2 + rTail % 42;
 				}
 				extra -= DUCK_NORMAL_COUNT;
 			case WALK:
